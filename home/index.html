@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TON618 Capital</title>
+<meta name="description" content="TON618 Capital — a research-driven Bitcoin and technology fund. Macro liquidity, on-chain signals, and disciplined position sizing, with the research published.">
+<meta property="og:title" content="TON618 Capital">
+<meta property="og:description" content="A research-driven Bitcoin and technology fund. Macro liquidity, on-chain signals, disciplined sizing — with the work published.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ton618capital.com/home/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --obsidian:#0B0B0C;--onyx:#16161A;--graphite:#26262B;--ash:#3A3A40;
+  --gold:#C9A24B;--champagne:#E6D2A2;--antique:#8A6D2B;
+  --ivory:#F6F3EC;--warm:#9A958A;
+  --serif:"EB Garamond",Georgia,"Times New Roman",serif;
+  --sans:"Inter","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--obsidian);color:var(--ivory);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"lnum" 1;
+}
+a{color:var(--champagne);text-decoration:none;}
+a:hover{color:var(--gold);}
+.wrap{max-width:1080px;margin:0 auto;padding:0 48px;}
+.rule{border:0;height:1px;background:var(--gold);opacity:.85;margin:0;}
+.rule--faint{background:var(--ash);opacity:1;}
+
+/* ---------- Header ---------- */
+header.site{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.82);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--ash);}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:14px 48px;max-width:1080px;margin:0 auto;}
+.brand{display:inline-flex;align-items:center;gap:.5em;font-family:var(--serif);}
+.brand .icon{height:1.85em;width:1.85em;flex:none;display:block;object-fit:cover;border-radius:4px;}
+.brand .name{font-size:1.32rem;font-weight:600;letter-spacing:-.01em;color:var(--ivory);white-space:nowrap;}
+.brand .name .six18{color:var(--gold);}
+.brand .name .cap{font-weight:400;}
+.menu{display:flex;align-items:center;gap:1.6rem;font-size:.82rem;font-weight:500;letter-spacing:.02em;}
+.menu a{color:var(--warm);border:0;text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;}
+.menu a:hover{color:var(--gold);}
+.menu a.cta{color:var(--obsidian);background:var(--gold);padding:.5rem .85rem;letter-spacing:.08em;}
+.menu a.cta:hover{background:var(--champagne);color:var(--obsidian);}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;background-color:#000;}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;
+  background-image:url('/assets/blackhole.jpg');
+  background-image:-webkit-image-set(url('/assets/blackhole.webp') type('image/webp'), url('/assets/blackhole.jpg') type('image/jpeg'));
+  background-image:image-set(url('/assets/blackhole.webp') type('image/webp'), url('/assets/blackhole.jpg') type('image/jpeg'));
+  background-position:center 40%;background-size:cover;background-repeat:no-repeat;}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg, rgba(7,7,9,.96) 0%, rgba(7,7,9,.86) 24%, rgba(7,7,9,.55) 46%, rgba(7,7,9,.22) 68%, rgba(7,7,9,.5) 100%),
+             linear-gradient(0deg, rgba(7,7,9,.85) 0%, rgba(7,7,9,0) 44%);}
+.hero .wrap{position:relative;z-index:2;padding-top:130px;padding-bottom:130px;}
+.hero-copy{max-width:620px;}
+.hero-copy h1.display,.hero-copy .lede{text-shadow:0 2px 26px rgba(0,0,0,.6);}
+.eyebrow{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);display:block;margin-bottom:1.1rem;}
+h1.display{font-family:var(--serif);font-weight:600;font-size:3.4rem;line-height:1.06;letter-spacing:-.015em;margin:0 0 1.1rem;}
+.lede{font-family:var(--serif);font-size:1.32rem;line-height:1.5;color:#D9D3C6;max-width:34em;margin:0 0 2rem;}
+.cta-row{display:flex;flex-wrap:wrap;gap:.9rem;}
+.btn{display:inline-block;font-family:var(--sans);font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.78rem 1.3rem;border:1px solid var(--gold);cursor:pointer;}
+.btn--solid{background:var(--gold);color:var(--obsidian);}
+.btn--solid:hover{background:var(--champagne);color:var(--obsidian);}
+.btn--ghost{background:transparent;color:var(--gold);}
+.btn--ghost:hover{background:rgba(201,162,75,.1);color:var(--champagne);}
+
+/* ---------- Sections ---------- */
+section{padding:74px 0;}
+.sec-eyebrow{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--warm);display:block;margin-bottom:.7rem;}
+h2{font-family:var(--serif);font-weight:600;font-size:2rem;line-height:1.12;letter-spacing:-.01em;margin:0 0 .5rem;}
+.sec-lede{color:#CFC9BC;max-width:52em;margin:.2rem 0 0;font-size:1.04rem;}
+
+/* epigraph */
+.epigraph{padding:46px 0;}
+.epigraph .q{font-family:var(--serif);font-style:italic;font-size:1.5rem;line-height:1.5;color:var(--champagne);max-width:30em;}
+.epigraph .src{display:block;margin-top:.9rem;font-family:var(--sans);font-style:normal;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);}
+.quasar{position:relative;height:1px;background:var(--ash);margin:0 0 2.2rem;max-width:30em;}
+.quasar::before{content:"";position:absolute;left:0;top:50%;width:7px;height:7px;border-radius:50%;background:var(--gold);transform:translateY(-50%);box-shadow:0 0 8px 1px rgba(201,162,75,.6);}
+
+/* research cards */
+.cards{margin-top:2.2rem;}
+.card{display:block;background:var(--onyx);border:1px solid var(--ash);border-left:3px solid var(--gold);padding:1.15rem 1.4rem;margin:1rem 0;transition:border-color .15s;}
+.card:hover{border-left-color:var(--champagne);}
+.card .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--warm);}
+.card h3{font-family:var(--serif);font-weight:600;font-size:1.3rem;margin:.3rem 0 .35rem;}
+.card h3 a{color:var(--ivory);border:0;}
+.card h3 a:hover{color:var(--gold);}
+.card p{margin:.2rem 0 .55rem;font-size:.92rem;color:#BDB7AB;}
+.card .links{font-size:.8rem;}
+.card .links a{color:var(--gold);border:0;}
+.card .links a:hover{color:var(--champagne);}
+.card .links .sep{color:var(--ash);margin:0 .55rem;}
+.verdict{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--obsidian);background:var(--champagne);padding:.18rem .5rem;margin-left:.5rem;vertical-align:middle;}
+.more{margin-top:1.3rem;font-size:.82rem;}
+.more a{color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;font-weight:600;border:0;}
+
+/* contact + follow */
+.contact .wrap,.follow .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem;}
+.contact .email,.xlarge{font-family:var(--serif);font-size:1.7rem;color:var(--gold);border:0;display:inline-flex;align-items:center;gap:.5rem;}
+.contact .email:hover,.xlarge:hover{color:var(--champagne);}
+.xlarge svg{width:.78em;height:.78em;fill:currentColor;}
+
+/* footer */
+footer.site{border-top:1px solid var(--ash);padding:2.4rem 0 3rem;}
+.disc{font-size:.72rem;color:var(--warm);line-height:1.6;max-width:62em;}
+.disc-head{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--warm);margin:0 0 .7rem;}
+.disc p{margin:0 0 .55rem;}
+.disc strong{color:#B8B2A4;font-weight:600;}
+.disc em{font-style:italic;}
+.disc a{color:var(--warm);border-bottom:1px solid var(--ash);}
+.disc a:hover{color:var(--gold);}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:1.6rem;font-size:.74rem;color:var(--warm);}
+.foot-row a{color:var(--warm);border:0;}
+.foot-row a:hover{color:var(--gold);}
+
+@media (max-width:820px){
+  .wrap,.nav{padding-left:24px;padding-right:24px;}
+  .menu{gap:1rem;}
+  .hero .wrap{padding-top:84px;padding-bottom:84px;}
+  .hero::before{background-position:center 38%;}
+  .hero::after{background:linear-gradient(180deg, rgba(7,7,9,.8) 0%, rgba(7,7,9,.5) 46%, rgba(7,7,9,.62) 100%);}
+  h1.display{font-size:2.5rem;}
+  section{padding:54px 0;}
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav class="nav">
+    <a class="brand" href="/home/" aria-label="TON618 Capital home">
+      <picture><source srcset="/assets/ton618-icon.webp" type="image/webp"><img class="icon" src="/assets/ton618-icon.png" alt="TON618 Capital" width="280" height="280"></picture>
+      <span class="name">TON<span class="six18">618</span> <span class="cap">Capital</span></span>
+    </a>
+    <span class="menu">
+      <a href="/ton618-research/">Research</a>
+      <a href="/tech-valuation/">Tech Valuation</a>
+      <a class="cta" href="mailto:research@ton618capital.com">Contact</a>
+    </span>
+  </nav>
+</header>
+
+<!-- ---------- Hero ---------- -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow">Private Investment Management</span>
+      <h1 class="display">Conviction in Bitcoin.</h1>
+      <p class="lede">TON618 Capital is a research-driven Bitcoin and technology fund. We separate signal from noise and apply investment discipline — and we publish the research behind the view, for free.</p>
+      <div class="cta-row">
+        <a class="btn btn--solid" href="/ton618-research/">Read the research</a>
+        <a class="btn btn--ghost" href="/tech-valuation/">Tech valuation reports</a>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="rule">
+
+<!-- ---------- Epigraph (theme) ---------- -->
+<section class="epigraph">
+  <div class="wrap">
+    <div class="quasar"></div>
+    <p class="q">A black hole so massive it shines as the brightest quasar in the sky — light cast from the edge of the void.
+      <span class="src">TON&nbsp;618</span>
+    </p>
+  </div>
+</section>
+<hr class="rule rule--faint">
+
+<!-- ---------- Selected research ---------- -->
+<section id="research">
+  <div class="wrap">
+    <span class="sec-eyebrow">Research</span>
+    <h2>Selected research.</h2>
+    <p class="sec-lede">Thematic and empirical notes, written to CFA standards and published in full, for free.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="k">Thematic · 24 June 2026</span>
+        <h3><a href="/ton618-research/quantum-computing/">How Close Is Quantum Computing to Being Useful?</a></h3>
+        <p>Three clocks for "useful": narrow scientific value now, broad commercial value in the 2030s, and a code-breaking machine now put at roughly one-in-three within ten years — the Bitcoin-specific risk in proportion.</p>
+        <span class="links"><a href="/ton618-research/quantum-computing/">Read →</a></span>
+      </div>
+      <div class="card">
+        <span class="k">Event Probability · 23 June 2026</span>
+        <h3><a href="/ton618-research/clarity-act/">Will the CLARITY Act Be Signed Before August?</a></h3>
+        <p>A probability for H.R. 3633 being signed on or before 31 July 2026, triangulated across a Kalshi market, a structural conditional-gate model, and an outside-view reference class. Central estimate ~13%.</p>
+        <span class="links"><a href="/ton618-research/clarity-act/">Read →</a></span>
+      </div>
+      <div class="card">
+        <span class="k">Empirical · 18 June 2026</span>
+        <h3><a href="/ton618-research/btc-factors/">What Actually Drives Bitcoin</a></h3>
+        <p>Every factor that actually leads Bitcoin — global liquidity, the business cycle, momentum, the power-law oscillator, the production-cost floor — and an honest scorecard on the store-of-value question.</p>
+        <span class="links"><a href="/ton618-research/btc-factors/">Read →</a></span>
+      </div>
+    </div>
+    <p class="more"><a href="/ton618-research/">All research →</a></p>
+  </div>
+</section>
+<hr class="rule rule--faint">
+
+<!-- ---------- Tech valuation ---------- -->
+<section id="tech-valuation">
+  <div class="wrap">
+    <span class="sec-eyebrow">Tech Valuation</span>
+    <h2>Tech-equity valuation reports.</h2>
+    <p class="sec-lede">CFA-standard valuations of the companies shaping the digital-asset and AI economy — built from primary filings, with the model attached.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="k">Initiating Coverage · 12 June 2026</span>
+        <h3><a href="/ton618-research-SPCX-20260612/">SPCX (SpaceX) — Tech-Equity Valuation</a><span class="verdict">Avoid at IPO</span></h3>
+        <p>Priced for Mars: the $1.77 trillion listing embeds the bull case, and then some. Fair value $66 against a $135 offer, built from the S-1/A.</p>
+        <span class="links"><a href="/ton618-research-SPCX-20260612/">Read →</a><span class="sep">·</span><a href="/ton618-research-SPCX-20260612/TON618_SPCX_Tech-Equity-Valuation.pdf">PDF</a><span class="sep">·</span><a href="/ton618-research-SPCX-20260612/TON618_SPCX_Valuation_Model.xlsx">Model</a></span>
+      </div>
+    </div>
+    <p class="more"><a href="/tech-valuation/">All tech valuation reports →</a></p>
+  </div>
+</section>
+<hr class="rule">
+
+<!-- ---------- Contact ---------- -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div>
+      <span class="sec-eyebrow">Contact</span>
+    </div>
+    <a class="email" href="mailto:research@ton618capital.com">research@ton618capital.com</a>
+  </div>
+</section>
+<hr class="rule rule--faint">
+
+<!-- ---------- Follow ---------- -->
+<section class="follow" id="follow">
+  <div class="wrap">
+    <div>
+      <span class="sec-eyebrow">Follow</span>
+    </div>
+    <a class="xlarge" href="https://x.com/ton618capital" target="_blank" rel="noopener" aria-label="TON618 Capital on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@ton618capital</a>
+  </div>
+</section>
+
+<!-- ---------- Footer ---------- -->
+<footer class="site">
+  <div class="wrap">
+    <div class="disc">
+      <p class="disc-head">Important Disclosures</p>
+      <p><strong>Information only.</strong> TON618 Capital. This site and all research on it are for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
+      <p><strong>Publisher&rsquo;s exclusion.</strong> All research is published solely as general, impersonal information of regular circulation. It is not tailored to the objectives or circumstances of any individual and is not issued in connection with compensation from any client. The Fund has no clients and distributes all research free of charge. On that basis it publishes in reliance on the publisher&rsquo;s exclusion from the definition of &ldquo;investment adviser&rdquo; under the Investment Advisers Act of 1940 (&sect;202(a)(11)(D); cf. <em>Lowe v. SEC</em>, 472 U.S. 181 (1985)).</p>
+      <p><strong>Registration &amp; conflicts.</strong> TON618 Capital is not registered as an investment adviser or broker-dealer in any capacity. The Fund is a Bitcoin fund and may hold or transact in the securities or digital assets it discusses; material conflicts are disclosed where they exist. The Fund receives no compensation from any party in connection with its research.</p>
+      <p><strong>Use of AI.</strong> Artificial intelligence is used in the creation of this research. All methodology and data integrity are reviewed and approved by a professional before publication; errors may nonetheless occur, and readers should verify independently.</p>
+      <p><strong>CFA.</strong> CFA&reg; and Chartered Financial Analyst&reg; are registered trademarks owned by CFA Institute. References to CFA Institute standards describe the analytical framework applied and do not imply certification by, membership in, endorsement by, or affiliation with CFA Institute.</p>
+      <p><strong>Risk &amp; feedback.</strong> Past performance is not indicative of future results. Digital assets and equities are volatile and may result in total loss of capital. Corrections and feedback are welcome at <a href="mailto:research@ton618capital.com">research@ton618capital.com</a>.</p>
+    </div>
+    <div class="foot-row">
+      <span>© 2026 TON618 Capital</span>
+      <span><a href="https://x.com/ton618capital" target="_blank" rel="noopener">@ton618capital</a> &nbsp;·&nbsp; <a href="/ton618-research/">Research</a> &nbsp;·&nbsp; <a href="/tech-valuation/">Tech Valuation</a> &nbsp;·&nbsp; <a href="mailto:research@ton618capital.com">Contact</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
