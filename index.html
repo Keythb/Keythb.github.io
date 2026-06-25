@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TON618 Capital</title>
+<meta name="description" content="TON618 Capital.">
+<meta property="og:title" content="TON618 Capital">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ton618capital.com/">
+<meta property="og:image" content="https://ton618capital.com/assets/blackhole.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+html,body{margin:0;height:100%;background:#000;}
+body{overflow:hidden;}
+.cover{display:block;position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden;cursor:pointer;text-decoration:none;background:#000;}
+.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;background:#000;transition:transform 1.5s cubic-bezier(.2,.7,.2,1);}
+.cover:hover .scene{transform:scale(1.05);}
+@media (max-width:820px){.scene{object-fit:contain;}}
+.tagline{position:absolute;left:0;right:0;bottom:11%;text-align:center;padding:0 7vw;opacity:0;animation:rise 2.6s ease-out .5s forwards;pointer-events:none;}
+.tagline p{font-family:"EB Garamond",Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(1.25rem,2.7vw,2.25rem);line-height:1.5;color:#ECDAA8;margin:0;letter-spacing:.01em;text-shadow:0 2px 36px rgba(0,0,0,.9),0 0 16px rgba(0,0,0,.7);}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.tagline{animation:none;opacity:1}.cover:hover .scene{transform:none}}
+</style>
+</head>
+<body>
+
+<a class="cover" href="/home/" aria-label="Enter TON618 Capital">
+  <picture>
+    <source srcset="/assets/blackhole.webp" type="image/webp">
+    <img class="scene" src="/assets/blackhole.jpg" alt="A supermassive black hole consuming a star" fetchpriority="high">
+  </picture>
+  <div class="tagline">
+    <p>One idea so powerful that it consumes everything caught in its gravity well.</p>
+  </div>
+</a>
+
+</body>
+</html>
