@@ -26,6 +26,20 @@
   .feed div{font-size:12px;color:#b8b2a0;padding:3px 0;border-bottom:1px solid #141416}
   .err{color:#e0564f;font-size:12px;margin:8px 0}
   button{background:none;border:1px solid #c9a227;color:#c9a227;font-size:10px;letter-spacing:1px;padding:4px 10px;cursor:pointer;margin-left:12px}
+  .casc{margin:10px 0 6px;padding:16px;border:1px solid #2a2a20;background:#101012}
+  .casc-head{font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:12px;color:#f5edd6}
+  .casc-head .up{color:#3fbf6f}.casc-head .down{color:#e0564f}
+  .rungs{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
+  .rung{flex:1;min-width:110px;border:1px solid #2a2a20;padding:10px;text-align:center}
+  .rung .tfl{font-size:11px;letter-spacing:2px;color:#8a8375;margin-bottom:4px}
+  .rung .st{font-size:13px;font-weight:600;color:#6f6a5a}
+  .rung.hit-golden{border-color:#3fbf6f}.rung.hit-golden .st{color:#3fbf6f}
+  .rung.hit-death{border-color:#e0564f}.rung.hit-death .st{color:#e0564f}
+  .rung.pending{border-color:#c9a227}.rung.pending .st{color:#c9a227}
+  .rung .sub2{font-size:10px;color:#6f6a5a;margin-top:3px}
+  .arrow{align-self:center;color:#524e42;font-size:16px}
+  .casc-cap{color:#6f6a5a;font-size:11px;margin:8px 0 0}
+  .casc-hist div{font-size:12px;color:#b8b2a0;padding:3px 0;border-bottom:1px solid #141416}
   .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
   .foot p{margin:0 0 7px}
 </style></head><body><div class="wrap">
@@ -47,6 +61,8 @@
 <table><thead><tr><th>TF</th><th>STATE</th><th>GAP %</th><th>50-SLOPE %</th><th>RSI14</th><th>VOL &times;20</th><th>BARS SINCE CROSS</th></tr></thead>
 <tbody id="ladder"></tbody></table>
 <h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
+<h2>CASCADE TRACKER</h2><div id="casc"></div>
+<div class="casc-cap">A cascade starts at the most recent 5m cross and must reach each next chart inside its measured window (15m within 24h &middot; 1h within 72h of the 15m flip &middot; 4h within 10 days of the 1h flip) or it is invalidated. Historical odds per rung: ~40% / ~35% / ~25%.</div>
 <div class="foot">
 <p>Market data: Coinbase Exchange public API, computed in-browser.</p>
 <p><b>Information only.</b> TON618 Capital. This dashboard is for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
@@ -60,7 +76,7 @@
 <script>
 const API='https://api.exchange.coinbase.com/products/BTC-USD';
 const GRAN={'1m':60,'5m':300,'15m':900,'1h':3600,'1d':86400};
-const NEED={'1m':460,'5m':700,'15m':1000,'1h':900,'1d':1500};
+const NEED={'1m':460,'5m':1300,'15m':1000,'1h':1300,'1d':1500};
 const DERIVED={'10m':['5m',600],'30m':['15m',1800],'45m':['15m',2700],'2h':['1h',7200],'3h':['1h',10800],'4h':['1h',14400],'1w':['1d',604800]};
 const SECS={'1m':60,'5m':300,'10m':600,'15m':900,'30m':1800,'45m':2700,'1h':3600,'2h':7200,'3h':10800,'4h':14400,'1d':86400,'1w':604800};
 const ORDER=['1m','5m','10m','15m','30m','45m','1h','2h','3h','4h','1d','1w'];
@@ -117,12 +133,58 @@ function analyze(tf,bars){
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
 function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
+function buildCascades(tfX){
+  const CHAIN=[['15m',24],['1h',72],['4h',240]];
+  const out=[];
+  for(const o of (tfX['5m']||[])){
+    const casc={dir:o.type,origin:o,rungs:[{tf:'5m',status:'hit',t:o.t}],state:'in_progress'};
+    let t=o.t;
+    for(const [tf,winH] of CHAIN){
+      const dl=t+winH*3600;
+      const hit=(tfX[tf]||[]).find(c=>c.type===o.type&&c.t>t&&c.t<=dl);
+      if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t}
+      else if(Date.now()/1000>dl){casc.rungs.push({tf,status:'expired',deadline:dl});casc.state='invalidated';break}
+      else{casc.rungs.push({tf,status:'pending',deadline:dl});break}
+    }
+    if(casc.rungs.length===4&&casc.rungs.every(r=>r.status==='hit'))casc.state='completed';
+    out.push(casc);
+  }
+  return out.sort((a,b)=>b.origin.t-a.origin.t);
+}
+function renderCascade(tfX){
+  const el=document.getElementById('casc');
+  const cs=buildCascades(tfX);
+  if(!cs.length){el.innerHTML='<div class="sub">no 5m cascade origin detected in loaded history</div>';return}
+  const c=cs[0],CH=['5m','15m','1h','4h'];
+  const dirW=c.dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>';
+  const stW=c.state==='completed'?'CASCADE COMPLETED &mdash; REACHED THE 4H CHART':
+    c.state==='invalidated'?'CASCADE INVALIDATED &mdash; DIED AT THE '+c.rungs[c.rungs.length-1].tf.toUpperCase()+' RUNG':
+    'CASCADE IN PROGRESS';
+  const boxes=CH.map((tf,i)=>{
+    const r=c.rungs[i];
+    let cls='rung',st='&mdash;',sub='not reached';
+    if(r){
+      if(r.status==='hit'){cls+=' hit-'+c.dir;st=c.dir==='golden'?'FLIPPED UP':'FLIPPED DOWN';sub=fmtT(r.t)+' UTC'}
+      else if(r.status==='pending'){cls+=' pending';st='WAITING';sub='must flip within '+Math.max(0,(r.deadline-Date.now()/1000)/3600).toFixed(1)+'h or cascade dies'}
+      else{cls+=' expired';st='EXPIRED';sub='window closed '+fmtT(r.deadline)+' UTC'}
+    }
+    return '<div class="'+cls+'"><div class="tfl">'+tf.toUpperCase()+'</div><div class="st">'+st+'</div><div class="sub2">'+sub+'</div></div>';
+  }).join('<div class="arrow">&rarr;</div>');
+  const hist=cs.slice(1,9).map(x=>{
+    const path=x.rungs.filter(r=>r.status==='hit').map(r=>r.tf).join('&rarr;');
+    const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; died at '+x.rungs[x.rungs.length-1].tf:' &hellip; still open';
+    return '<div>'+fmtT(x.origin.t)+'  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
+  }).join('');
+  el.innerHTML='<div class="casc"><div class="casc-head">'+dirW+' &nbsp;'+stW+'</div><div class="rungs">'+boxes+'</div></div>'+
+    (hist?'<h2>RECENT CASCADE ATTEMPTS</h2><div class="casc-hist">'+hist+'</div>':'');
+}
 function render(){
-  const rows=[],all=[];
+  const rows=[],all=[],tfX={};
   for(const tf of ORDER){
     const bars=DERIVED[tf]?resample(store[DERIVED[tf][0]],SECS[tf]):store[tf];
-    const a=analyze(tf,bars);rows.push(a.row);all.push(...a.crosses);
+    const a=analyze(tf,bars);rows.push(a.row);all.push(...a.crosses);tfX[tf]=a.crosses;
   }
+  renderCascade(tfX);
   document.getElementById('ladder').innerHTML=rows.map(r=>r.state==='n/a'?'':
     '<tr><td><b>'+r.tf+'</b></td><td class="'+r.state+'">'+r.state.toUpperCase()+'</td>'+
     '<td class="'+cls(r.gap)+'">'+r.gap+'</td><td class="'+cls(r.slope)+'">'+r.slope+'</td>'+
