@@ -1,0 +1,152 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>TON618 · BTC Cascade</title>
+<style>
+  body{background:#0b0b0d;color:#e8e0cc;font-family:-apple-system,Helvetica,sans-serif;margin:0;padding:24px}
+  .wrap{max-width:820px;margin:0 auto}
+  h1{font-size:15px;letter-spacing:3px;color:#c9a227;font-weight:600;margin:0 0 2px}
+  .sub{color:#6f6a5a;font-size:11px;margin-bottom:18px}
+  .price{font-size:42px;font-weight:700;color:#f5edd6;margin:6px 0 2px}
+  .meta{color:#8a8375;font-size:12px;margin-bottom:14px}
+  svg{display:block;margin:4px 0 20px;width:100%}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th{color:#c9a227;text-align:left;font-weight:600;border-bottom:1px solid #2a2a20;padding:6px 10px 6px 0;font-size:11px;letter-spacing:1px}
+  td{padding:6px 10px 6px 0;border-bottom:1px solid #17171a;color:#d8d2c0}
+  .golden{color:#3fbf6f;font-weight:600}.death{color:#e0564f;font-weight:600}
+  .neg{color:#e0564f}.pos{color:#3fbf6f}
+  h2{font-size:12px;color:#c9a227;letter-spacing:2px;margin:26px 0 8px;font-weight:600}
+  .feed div{font-size:12px;color:#b8b2a0;padding:3px 0;border-bottom:1px solid #141416}
+  .err{color:#e0564f;font-size:12px;margin:8px 0}
+  button{background:none;border:1px solid #c9a227;color:#c9a227;font-size:10px;letter-spacing:1px;padding:4px 10px;cursor:pointer;margin-left:12px}
+  .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
+  .foot p{margin:0 0 7px}
+</style></head><body><div class="wrap">
+<h1>TON618 &middot; BTC CASCADE <button id="alerts" onclick="askNotify()">ENABLE ALERTS</button></h1>
+<div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
+<div class="price" id="price">&mdash;</div>
+<div class="meta" id="meta">catching up data&hellip;</div>
+<div class="err" id="err"></div>
+<svg id="spark" height="70" viewBox="0 0 760 70" preserveAspectRatio="none"></svg>
+<table><thead><tr><th>TF</th><th>STATE</th><th>GAP %</th><th>50-SLOPE %</th><th>RSI14</th><th>VOL &times;20</th><th>BARS SINCE CROSS</th></tr></thead>
+<tbody id="ladder"></tbody></table>
+<h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
+<div class="foot">
+<p>Market data: Coinbase Exchange public API, computed in-browser.</p>
+<p><b>Information only.</b> TON618 Capital. This dashboard is for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
+<p><b>Publisher's exclusion.</b> All research is published solely as general, impersonal information of regular circulation. It is not tailored to the objectives or circumstances of any individual and is not issued in connection with compensation from any client. The Fund has no clients and distributes all research free of charge. On that basis it publishes in reliance on the publisher's exclusion from the definition of "investment adviser" under the Investment Advisers Act of 1940 (&sect;202(a)(11)(D); cf. <i>Lowe v. SEC</i>, 472 U.S. 181 (1985)).</p>
+<p><b>Registration &amp; conflicts.</b> TON618 Capital is not registered as an investment adviser or broker-dealer in any capacity. The Fund is a Bitcoin fund and may hold or transact in the securities or digital assets it discusses, including Bitcoin; material conflicts are disclosed where they exist. The Fund receives no compensation from any party in connection with its research.</p>
+<p><b>Use of AI.</b> Artificial intelligence is used in the creation of this research. All methodology and data integrity are reviewed and approved before publication by TON618 Capital's Chief Investment Officer, Keyth Beck; errors may nonetheless occur, and readers should verify independently.</p>
+<p><b>CFA.</b> This dashboard was prepared to align with CFA Institute analytical standards (methodology only). CFA&reg; and Chartered Financial Analyst&reg; are registered trademarks owned by CFA Institute. That reference describes the analytical framework applied; it does not imply this material was prepared, reviewed, or authored by a CFA charterholder, and it is not issued, reviewed, endorsed, certified, or approved by &mdash; nor affiliated with &mdash; CFA Institute.</p>
+<p><b>Risk &amp; feedback.</b> Past performance is not indicative of future results. Digital assets and equities are volatile and may result in total loss of capital. Corrections and feedback are welcome &mdash; please direct them to CIO Keyth Beck at keyth@ton618capital.com.</p>
+</div>
+</div>
+<script>
+const API='https://api.exchange.coinbase.com/products/BTC-USD';
+const GRAN={'1m':60,'5m':300,'15m':900,'1h':3600,'1d':86400};
+const NEED={'1m':460,'5m':700,'15m':1000,'1h':900,'1d':1500};
+const DERIVED={'10m':['5m',600],'30m':['15m',1800],'45m':['15m',2700],'2h':['1h',7200],'3h':['1h',10800],'4h':['1h',14400],'1w':['1d',604800]};
+const SECS={'1m':60,'5m':300,'10m':600,'15m':900,'30m':1800,'45m':2700,'1h':3600,'2h':7200,'3h':10800,'4h':14400,'1d':86400,'1w':604800};
+const ORDER=['1m','5m','10m','15m','30m','45m','1h','2h','3h','4h','1d','1w'];
+let store={},known=new Set(),loaded=false;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function fetchCandles(gran,need){
+  let raw=[],end=Date.now()/1000;
+  while(raw.length<need){
+    const start=end-300*gran;
+    const u=`${API}/candles?granularity=${gran}&start=${new Date(start*1000).toISOString()}&end=${new Date(end*1000).toISOString()}`;
+    const rows=await (await fetch(u)).json();
+    if(!Array.isArray(rows)||!rows.length)break;
+    raw=raw.concat(rows);end=start;await sleep(150);
+  }
+  return dedupe(raw.map(r=>({t:r[0],l:r[1],h:r[2],o:r[3],c:r[4],v:r[5]})));
+}
+function dedupe(bars){const m=new Map();bars.forEach(b=>m.set(b.t,b));return [...m.values()].sort((a,b)=>a.t-b.t)}
+function resample(bars,sec){
+  const m=new Map();
+  for(const b of bars){
+    const k=sec===604800?Math.floor((b.t-345600)/604800)*604800+345600:Math.floor(b.t/sec)*sec;
+    let x=m.get(k);
+    if(!x)m.set(k,{t:k,o:b.o,h:b.h,l:b.l,c:b.c,v:b.v});
+    else{x.h=Math.max(x.h,b.h);x.l=Math.min(x.l,b.l);x.c=b.c;x.v+=b.v}
+  }
+  return [...m.values()].sort((a,b)=>a.t-b.t);
+}
+function analyze(tf,bars){
+  const now=Date.now()/1000,sec=SECS[tf];
+  const cl=bars.filter(b=>b.t+sec<=now);
+  const n=cl.length,c=cl.map(b=>b.c),v=cl.map(b=>b.v);
+  const smaAt=(arr,i,w)=>{if(i<w-1)return null;let s=0;for(let k=i-w+1;k<=i;k++)s+=arr[k];return s/w};
+  const rsi=new Array(n).fill(null);
+  let au=0,ad=0;
+  for(let i=1;i<n;i++){
+    const d=c[i]-c[i-1],up=Math.max(d,0),dn=Math.max(-d,0);
+    au=au+(up-au)/14;ad=ad+(dn-ad)/14;
+    if(i>=14)rsi[i]=ad===0?100:100-100/(1+au/ad);
+  }
+  const diff=[];for(let i=0;i<n;i++){const f=smaAt(c,i,50),s=smaAt(c,i,200);diff.push(f!==null&&s!==null?f-s:null)}
+  const crosses=[];
+  for(let i=1;i<n;i++)if(diff[i]!==null&&diff[i-1]!==null&&Math.sign(diff[i])!==Math.sign(diff[i-1])&&diff[i]!==0&&diff[i-1]!==0){
+    const va=smaAt(v,i,20);
+    crosses.push({tf,t:cl[i].t,type:diff[i]>0?'golden':'death',price:c[i],rsi:rsi[i]?rsi[i].toFixed(1):'',volx:va?(v[i]/va).toFixed(2):''});
+  }
+  const i=n-1,f=smaAt(c,i,50),s=smaAt(c,i,200),va=smaAt(v,i,20);
+  if(f===null||s===null)return{row:{tf,state:'n/a'},crosses};
+  const lb=Math.min(10,i),f0=smaAt(c,i-lb,50);
+  const last=crosses.length?crosses[crosses.length-1]:null;
+  return{row:{tf,state:f>s?'golden':'death',gap:((f-s)/s*100).toFixed(2),
+    slope:f0?((f/f0-1)*100).toFixed(2):'',rsi:rsi[i]?rsi[i].toFixed(1):'',volx:va?(v[i]/va).toFixed(2):'',
+    since:last?{bars:cl.filter(b=>b.t>last.t).length,type:last.type}:null},crosses};
+}
+function cls(x){return x>0?'pos':(x<0?'neg':'')}
+function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
+function render(){
+  const rows=[],all=[];
+  for(const tf of ORDER){
+    const bars=DERIVED[tf]?resample(store[DERIVED[tf][0]],SECS[tf]):store[tf];
+    const a=analyze(tf,bars);rows.push(a.row);all.push(...a.crosses);
+  }
+  document.getElementById('ladder').innerHTML=rows.map(r=>r.state==='n/a'?'':
+    '<tr><td><b>'+r.tf+'</b></td><td class="'+r.state+'">'+r.state.toUpperCase()+'</td>'+
+    '<td class="'+cls(r.gap)+'">'+r.gap+'</td><td class="'+cls(r.slope)+'">'+r.slope+'</td>'+
+    '<td>'+r.rsi+'</td><td>'+r.volx+'</td><td>'+(r.since?r.since.bars+' ('+r.since.type+')':'&mdash;')+'</td></tr>').join('');
+  all.sort((a,b)=>b.t-a.t);
+  document.getElementById('feed').innerHTML=all.slice(0,20).map(e=>
+    '<div>'+fmtT(e.t)+'  <b class="'+e.type+'">'+e.tf+' '+e.type.toUpperCase()+'</b> @ $'+Number(e.price).toLocaleString()+
+    '  &middot; RSI '+e.rsi+' &middot; vol '+e.volx+'x</div>').join('');
+  const sp=store['1m'].slice(-240).map(b=>b.c);
+  if(sp.length>1){const mn=Math.min(...sp),mx=Math.max(...sp),rg=(mx-mn)||1;
+    const pts=sp.map((y,i)=>(i/(sp.length-1)*760)+','+(65-(y-mn)/rg*60)).join(' ');
+    document.getElementById('spark').innerHTML='<polyline points="'+pts+'" fill="none" stroke="#c9a227" stroke-width="1.5"/>'+
+    '<text x="2" y="10" fill="#6f6a5a" font-size="9">'+mx.toLocaleString()+'</text><text x="2" y="68" fill="#6f6a5a" font-size="9">'+mn.toLocaleString()+'</text>'}
+  for(const e of all){
+    const k=e.tf+e.t;
+    if(loaded&&!known.has(k)&&Date.now()/1000-e.t<3600&&Notification.permission==='granted')
+      new Notification('BTC Cascade',{body:e.tf+' '+e.type.toUpperCase()+' cross @ $'+Number(e.price).toLocaleString()});
+    known.add(k);
+  }
+  loaded=true;
+}
+async function ticker(){
+  try{const t=await (await fetch(API+'/ticker')).json();
+    document.getElementById('price').textContent='$'+Number(t.price).toLocaleString();
+    document.getElementById('meta').textContent='bid '+t.bid+'  ask '+t.ask+'  ·  updated '+new Date().toISOString().slice(11,19)+' UTC';
+  }catch(e){}
+}
+async function refresh(){
+  try{for(const tf in GRAN){const fresh=await fetchCandles(GRAN[tf],290);store[tf]=dedupe(store[tf].concat(fresh)).slice(-NEED[tf]-300)}
+    render();document.getElementById('err').textContent='';
+  }catch(e){document.getElementById('err').textContent='refresh error: '+e}
+}
+function askNotify(){Notification.requestPermission().then(p=>{document.getElementById('alerts').textContent=p==='granted'?'ALERTS ON':'ENABLE ALERTS'})}
+(async()=>{
+  try{
+    if(Notification.permission==='granted')document.getElementById('alerts').textContent='ALERTS ON';
+    for(const tf in GRAN)store[tf]=await fetchCandles(GRAN[tf],NEED[tf]);
+    render();ticker();
+    setInterval(refresh,60000);setInterval(ticker,15000);
+  }catch(e){document.getElementById('err').textContent='load error: '+e}
+})();
+</script></body></html>
