@@ -11,6 +11,10 @@
   .odds{font-size:21px;line-height:1.5;color:#f5edd6;font-weight:600;margin:14px 0 4px;padding:14px 16px;border:1px solid #2a2a20;background:#101012}
   .odds .g{color:#c9a227}
   .odds-cap{color:#6f6a5a;font-size:11px;margin-bottom:16px}
+  .findings{font-size:16px;line-height:1.6;color:#d8d2c0;margin:0 0 4px;padding:14px 16px;border:1px solid #2a2a20;background:#101012}
+  .findings div{margin:0 0 10px}
+  .findings div:last-child{margin:0}
+  .findings .k{color:#c9a227;font-weight:700;letter-spacing:1px;font-size:12px;display:block;margin-bottom:2px}
   .price{font-size:42px;font-weight:700;color:#f5edd6;margin:6px 0 2px}
   .meta{color:#8a8375;font-size:12px;margin-bottom:14px}
   svg{display:block;margin:4px 0 20px;width:100%}
@@ -30,6 +34,12 @@
 <div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
 <div class="odds">A <span class="g">5m cross</span> is followed by a same-direction <span class="g">15m cross</span> within 24h about <span class="g">40%</span> of the time &middot; <span class="g">15m &rarr; 1h</span> within 72h about <span class="g">35%</span> &middot; <span class="g">1h &rarr; 4h</span> within 10 days about <span class="g">23&ndash;30%</span></div>
 <div class="odds-cap">Cascade propagation odds, measured from the TON618 cross-event library (~1 year of Coinbase BTC/USD history; most crosses die on their own timeframe &mdash; a cascade that keeps climbing is the signal).</div>
+<div class="findings">
+<div><span class="k">DURATION FOLLOWS MOMENTUM</span>Crosses aligned with their own RSI run longest: low-RSI death crosses and high-RSI golden crosses last materially longer before invalidating (rank correlation &approx; &plusmn;0.30 across ~3,500 events &mdash; the library's most robust finding).</div>
+<div><span class="k">DON'T CHASE EXTENDED GOLDEN CROSSES</span>Intraday (15m&ndash;1h) golden crosses arriving with RSI already above 60 average <span class="g">&minus;0.45%</span> over the next 50 bars &mdash; the strongest negative edge measured. They persist longer, but the entry price is worse.</div>
+<div><span class="k">CASCADES ARE MEMORYLESS &mdash; THE LADDER BUYS LEAD TIME, NOT ODDS</span>Each rung is a fresh ~40/35/25% draw regardless of how the chain got there. But nearly every higher-timeframe flip <i>was</i> preceded by a chain from below: median warning &approx; 37h before a 1h flip, ~6 days before a 4h flip.</div>
+<div><span class="k">A RAW CROSS IS A COIN FLIP</span>Below the daily chart, crosses alone carry no directional edge (win rates 47&ndash;52%). They are state markers and tripwires for staging entries and exits &mdash; not trades.</div>
+</div>
 <div class="price" id="price">&mdash;</div>
 <div class="meta" id="meta">catching up data&hellip;</div>
 <div class="err" id="err"></div>
