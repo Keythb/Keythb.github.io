@@ -40,6 +40,11 @@
   .arrow{align-self:center;color:#524e42;font-size:16px}
   .casc-cap{color:#6f6a5a;font-size:11px;margin:8px 0 0}
   .casc-hist div{font-size:12px;color:#b8b2a0;padding:3px 0;border-bottom:1px solid #141416}
+  .extent{display:flex;gap:4px;flex-wrap:wrap}
+  .eseg{flex:1;min-width:46px;text-align:center;padding:7px 2px;font-size:10px;letter-spacing:1px;border:1px solid #2a2a20;color:#6f6a5a}
+  .eseg.golden{border-color:#3fbf6f;color:#3fbf6f;background:rgba(63,191,111,.08)}
+  .eseg.death{border-color:#e0564f;color:#e0564f;background:rgba(224,86,79,.08)}
+  .eseg.dim{opacity:.35;background:none}
   .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
   .foot p{margin:0 0 7px}
 </style></head><body><div class="wrap">
@@ -61,8 +66,8 @@
 <table><thead><tr><th>TF</th><th>STATE</th><th>GAP %</th><th>50-SLOPE %</th><th>RSI14</th><th>VOL &times;20</th><th>BARS SINCE CROSS</th></tr></thead>
 <tbody id="ladder"></tbody></table>
 <h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
-<h2>CASCADE TRACKER</h2><div id="casc"></div>
-<div class="casc-cap">A cascade starts at the most recent 5m cross and must reach each next chart inside its measured window (15m within 24h &middot; 1h within 72h of the 15m flip &middot; 4h within 10 days of the 1h flip) or it is invalidated. Historical odds per rung: ~40% / ~35% / ~25%.</div>
+<h2>CASCADE TRACKER</h2><div id="extent"></div><div id="casc"></div>
+<div class="casc-cap">A cascade starts at the most recent 5m cross and must reach each next chart inside its measured window (15m within 24h &middot; 1h within 72h of the 15m flip &middot; 4h within 10 days of the 1h flip) or it is invalidated. A chart that is already in the cascade's direction when it gets there counts as aligned. Historical odds per fresh rung: ~40% / ~35% / ~25%.</div>
 <div class="foot">
 <p>Market data: Coinbase Exchange public API, computed in-browser.</p>
 <p><b>Information only.</b> TON618 Capital. This dashboard is for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
@@ -133,7 +138,14 @@ function analyze(tf,bars){
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
 function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
-function buildCascades(tfX){
+function stateAt(crosses,t,fallback){
+  let last=null;
+  for(const c of crosses){if(c.t<=t)last=c;else break}
+  if(last)return last.type;
+  if(crosses.length)return crosses[0].type==='golden'?'death':'golden';
+  return fallback;
+}
+function buildCascades(tfX,cur){
   const CHAIN=[['15m',24],['1h',72],['4h',240]];
   const out=[];
   for(const o of (tfX['5m']||[])){
@@ -143,17 +155,38 @@ function buildCascades(tfX){
       const dl=t+winH*3600;
       const hit=(tfX[tf]||[]).find(c=>c.type===o.type&&c.t>t&&c.t<=dl);
       if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t}
+      else if(stateAt(tfX[tf]||[],t,cur[tf])===o.type){casc.rungs.push({tf,status:'aligned',t})}
       else if(Date.now()/1000>dl){casc.rungs.push({tf,status:'expired',deadline:dl});casc.state='invalidated';break}
       else{casc.rungs.push({tf,status:'pending',deadline:dl});break}
     }
-    if(casc.rungs.length===4&&casc.rungs.every(r=>r.status==='hit'))casc.state='completed';
+    if(casc.rungs.length===4&&casc.rungs.every(r=>r.status==='hit'||r.status==='aligned'))casc.state='completed';
     out.push(casc);
   }
   return out.sort((a,b)=>b.origin.t-a.origin.t);
 }
-function renderCascade(tfX){
+function renderExtent(rows){
+  const v=rows.filter(r=>r.state==='golden'||r.state==='death');
+  if(!v.length)return;
+  // anchor the run on the 5m chart (the cascade origin); the 1m is too
+  // whipsaw-prone to define the move's direction
+  let a=v.findIndex(r=>r.tf==='5m');if(a<0)a=0;
+  const dir=v[a].state;let ext=1;
+  for(let i=a+1;i<v.length;i++){if(v[i].state===dir)ext++;else break}
+  const top=v[a+ext-1].tf,next=a+ext<v.length?v[a+ext].tf:null;
+  const head=(dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>')+
+    ' &nbsp;CASCADED OUT TO THE '+top.toUpperCase()+' CHART'+(next?' &mdash; NEXT RUNG: '+next.toUpperCase():' &mdash; FULL LADDER');
+  const segs=v.map((r,i)=>{
+    const bright=(i>=a&&i<a+ext)||(i<a&&r.state===dir);
+    return '<div class="eseg '+r.state+(bright?'':' dim')+'">'+r.tf.toUpperCase()+'</div>';
+  }).join('');
+  document.getElementById('extent').innerHTML='<div class="casc"><div class="casc-head">'+head+
+    '</div><div class="extent">'+segs+'</div><div class="casc-cap" style="margin-top:8px">Bright rungs = the unbroken run of same-direction charts counting up from the 5m (the cascade origin). Dim rungs sit beyond the break. The 1m is the tripwire &mdash; it flips first and dims first when a reversal attempt starts.</div></div>';
+}
+function renderCascade(tfX,rows){
+  renderExtent(rows);
+  const cur={};rows.forEach(r=>cur[r.tf]=r.state);
   const el=document.getElementById('casc');
-  const cs=buildCascades(tfX);
+  const cs=buildCascades(tfX,cur);
   if(!cs.length){el.innerHTML='<div class="sub">no 5m cascade origin detected in loaded history</div>';return}
   const c=cs[0],CH=['5m','15m','1h','4h'];
   const dirW=c.dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>';
@@ -165,13 +198,14 @@ function renderCascade(tfX){
     let cls='rung',st='&mdash;',sub='not reached';
     if(r){
       if(r.status==='hit'){cls+=' hit-'+c.dir;st=c.dir==='golden'?'FLIPPED UP':'FLIPPED DOWN';sub=fmtT(r.t)+' UTC'}
+      else if(r.status==='aligned'){cls+=' hit-'+c.dir;st='ALREADY ALIGNED';sub='was in this state when the cascade arrived'}
       else if(r.status==='pending'){cls+=' pending';st='WAITING';sub='must flip within '+Math.max(0,(r.deadline-Date.now()/1000)/3600).toFixed(1)+'h or cascade dies'}
       else{cls+=' expired';st='EXPIRED';sub='window closed '+fmtT(r.deadline)+' UTC'}
     }
     return '<div class="'+cls+'"><div class="tfl">'+tf.toUpperCase()+'</div><div class="st">'+st+'</div><div class="sub2">'+sub+'</div></div>';
   }).join('<div class="arrow">&rarr;</div>');
   const hist=cs.slice(1,9).map(x=>{
-    const path=x.rungs.filter(r=>r.status==='hit').map(r=>r.tf).join('&rarr;');
+    const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; died at '+x.rungs[x.rungs.length-1].tf:' &hellip; still open';
     return '<div>'+fmtT(x.origin.t)+'  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
   }).join('');
@@ -184,7 +218,7 @@ function render(){
     const bars=DERIVED[tf]?resample(store[DERIVED[tf][0]],SECS[tf]):store[tf];
     const a=analyze(tf,bars);rows.push(a.row);all.push(...a.crosses);tfX[tf]=a.crosses;
   }
-  renderCascade(tfX);
+  renderCascade(tfX,rows);
   document.getElementById('ladder').innerHTML=rows.map(r=>r.state==='n/a'?'':
     '<tr><td><b>'+r.tf+'</b></td><td class="'+r.state+'">'+r.state.toUpperCase()+'</td>'+
     '<td class="'+cls(r.gap)+'">'+r.gap+'</td><td class="'+cls(r.slope)+'">'+r.slope+'</td>'+
