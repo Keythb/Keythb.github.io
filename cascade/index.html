@@ -8,13 +8,12 @@
   .wrap{max-width:820px;margin:0 auto}
   h1{font-size:15px;letter-spacing:3px;color:#c9a227;font-weight:600;margin:0 0 2px}
   .sub{color:#6f6a5a;font-size:11px;margin-bottom:18px}
-  .odds{font-size:21px;line-height:1.5;color:#f5edd6;font-weight:600;margin:14px 0 4px;padding:14px 16px;border:1px solid #2a2a20;background:#101012}
-  .odds .g{color:#c9a227}
-  .odds-cap{color:#6f6a5a;font-size:11px;margin-bottom:16px}
-  .findings{font-size:16px;line-height:1.6;color:#d8d2c0;margin:0 0 4px;padding:14px 16px;border:1px solid #2a2a20;background:#101012}
-  .findings div{margin:0 0 10px}
+  .findings{font-size:15px;line-height:1.65;color:#d8d2c0;margin:14px 0 18px;padding:16px 18px;border:1px solid #2a2a20;background:#101012}
+  .findings div{margin:0 0 13px}
   .findings div:last-child{margin:0}
   .findings .k{color:#c9a227;font-weight:700;letter-spacing:1px;font-size:12px;display:block;margin-bottom:2px}
+  .findings .g{color:#c9a227;font-weight:600}
+  .findings-cap{color:#6f6a5a;font-size:11px;margin:-8px 0 16px}
   .price{font-size:42px;font-weight:700;color:#f5edd6;margin:6px 0 2px}
   .meta{color:#8a8375;font-size:12px;margin-bottom:14px}
   svg{display:block;margin:4px 0 20px;width:100%}
@@ -32,14 +31,14 @@
 </style></head><body><div class="wrap">
 <h1>TON618 &middot; BTC CASCADE <button id="alerts" onclick="askNotify()">ENABLE ALERTS</button></h1>
 <div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
-<div class="odds">A <span class="g">5m cross</span> is followed by a same-direction <span class="g">15m cross</span> within 24h about <span class="g">40%</span> of the time &middot; <span class="g">15m &rarr; 1h</span> within 72h about <span class="g">35%</span> &middot; <span class="g">1h &rarr; 4h</span> within 10 days about <span class="g">23&ndash;30%</span></div>
-<div class="odds-cap">Cascade propagation odds, measured from the TON618 cross-event library (~1 year of Coinbase BTC/USD history; most crosses die on their own timeframe &mdash; a cascade that keeps climbing is the signal).</div>
 <div class="findings">
-<div><span class="k">DURATION FOLLOWS MOMENTUM</span>Crosses aligned with their own RSI run longest: low-RSI death crosses and high-RSI golden crosses last materially longer before invalidating (rank correlation &approx; &plusmn;0.30 across ~3,500 events &mdash; the library's most robust finding).</div>
-<div><span class="k">DON'T CHASE EXTENDED GOLDEN CROSSES</span>Intraday (15m&ndash;1h) golden crosses arriving with RSI already above 60 average <span class="g">&minus;0.45%</span> over the next 50 bars &mdash; the strongest negative edge measured. They persist longer, but the entry price is worse.</div>
-<div><span class="k">CASCADES ARE MEMORYLESS &mdash; THE LADDER BUYS LEAD TIME, NOT ODDS</span>Each rung is a fresh ~40/35/25% draw regardless of how the chain got there. But nearly every higher-timeframe flip <i>was</i> preceded by a chain from below: median warning &approx; 37h before a 1h flip, ~6 days before a 4h flip.</div>
-<div><span class="k">A RAW CROSS IS A COIN FLIP</span>Below the daily chart, crosses alone carry no directional edge (win rates 47&ndash;52%). They are state markers and tripwires for staging entries and exits &mdash; not trades.</div>
+<div><span class="k">1 &middot; HOW OFTEN A CROSS SPREADS TO THE NEXT CHART</span>When the 5-minute chart makes a cross, the 15-minute chart makes the same cross within a day about <span class="g">40%</span> of the time. A 15-minute cross carries to the 1-hour chart within 3 days about <span class="g">35%</span> of the time. A 1-hour cross carries to the 4-hour chart within 10 days about <span class="g">25%</span> of the time. Most crosses never make it past their own chart &mdash; one that keeps climbing is the exception worth watching.</div>
+<div><span class="k">2 &middot; IF RSI AGREES WITH THE CROSS, THE TREND LASTS LONGER</span>Check RSI at the moment a cross happens. If it already agrees with the cross &mdash; above 60 on a golden cross, below 40 on a death cross &mdash; the new trend runs noticeably longer before it reverses. If RSI disagrees, the cross usually dies early. This is the most reliable pattern in the library.</div>
+<div><span class="k">3 &middot; DON'T BUY A GOLDEN CROSS THAT ARRIVES OVERBOUGHT</span>On the 15-minute to 1-hour charts, a golden cross that shows up with RSI already above 60 is usually a bad buy: on average, price is <span class="g">0.45% lower</span> 50 bars later. The trend itself often keeps going (see #2) &mdash; the problem is you're paying a stretched price for it.</div>
+<div><span class="k">4 &middot; SMALL CHARTS GIVE WARNING TIME, NOT BETTER ODDS</span>A cascade that already climbed one rung is <i>not</i> more likely to climb the next &mdash; every step stays roughly the same 40/35/25% draw. But almost every big-chart flip was preceded by the small charts flipping first: typically about <span class="g">1.5 days</span> of warning before the 1-hour flips and about <span class="g">6 days</span> before the 4-hour flips. Use the small charts as an early-warning system for staging entries and exits.</div>
+<div><span class="k">5 &middot; A CROSS BY ITSELF IS A COIN FLIP</span>On any chart faster than the daily, a cross alone tells you nothing about direction &mdash; price is roughly 50/50 afterward. A cross tells you what state the market is in and when to pay attention. It is not a buy or sell signal on its own.</div>
 </div>
+<div class="findings-cap">Measured from the TON618 cross-event library: ~5,000 scored 50/200 SMA cross events, ~1 year of Coinbase BTC/USD history across 12 timeframes (10 years on daily/weekly). Re-tested on every library rebuild; figures may change as the sample grows.</div>
 <div class="price" id="price">&mdash;</div>
 <div class="meta" id="meta">catching up data&hellip;</div>
 <div class="err" id="err"></div>
