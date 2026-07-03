@@ -8,6 +8,9 @@
   .wrap{max-width:820px;margin:0 auto}
   h1{font-size:15px;letter-spacing:3px;color:#c9a227;font-weight:600;margin:0 0 2px}
   .sub{color:#6f6a5a;font-size:11px;margin-bottom:18px}
+  .odds{font-size:21px;line-height:1.5;color:#f5edd6;font-weight:600;margin:14px 0 4px;padding:14px 16px;border:1px solid #2a2a20;background:#101012}
+  .odds .g{color:#c9a227}
+  .odds-cap{color:#6f6a5a;font-size:11px;margin-bottom:16px}
   .price{font-size:42px;font-weight:700;color:#f5edd6;margin:6px 0 2px}
   .meta{color:#8a8375;font-size:12px;margin-bottom:14px}
   svg{display:block;margin:4px 0 20px;width:100%}
@@ -25,6 +28,8 @@
 </style></head><body><div class="wrap">
 <h1>TON618 &middot; BTC CASCADE <button id="alerts" onclick="askNotify()">ENABLE ALERTS</button></h1>
 <div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
+<div class="odds">A <span class="g">5m cross</span> is followed by a same-direction <span class="g">15m cross</span> within 24h about <span class="g">40%</span> of the time &middot; <span class="g">15m &rarr; 1h</span> within 72h about <span class="g">35%</span> &middot; <span class="g">1h &rarr; 4h</span> within 10 days about <span class="g">23&ndash;30%</span></div>
+<div class="odds-cap">Cascade propagation odds, measured from the TON618 cross-event library (~1 year of Coinbase BTC/USD history; most crosses die on their own timeframe &mdash; a cascade that keeps climbing is the signal).</div>
 <div class="price" id="price">&mdash;</div>
 <div class="meta" id="meta">catching up data&hellip;</div>
 <div class="err" id="err"></div>
