@@ -29,31 +29,36 @@
   .casc{margin:10px 0 6px;padding:16px;border:1px solid #2a2a20;background:#101012}
   .casc-head{font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:12px;color:#f5edd6}
   .casc-head .up{color:#3fbf6f}.casc-head .down{color:#e0564f}
-  .rungs{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
-  .rung{flex:1;min-width:88px;border:1px solid #2a2a20;padding:10px 6px;text-align:center}
-  .rung .tfl{font-size:11px;letter-spacing:2px;color:#8a8375;margin-bottom:4px}
-  .rung .st{font-size:13px;font-weight:600;color:#6f6a5a}
-  .rung.hit-golden{border-color:#3fbf6f}.rung.hit-golden .st{color:#3fbf6f}
-  .rung.hit-death{border-color:#e0564f}.rung.hit-death .st{color:#e0564f}
-  .rung.pending{border-color:#c9a227}.rung.pending .st{color:#c9a227}
-  .rung .sub2{font-size:10px;color:#6f6a5a;margin-top:3px}
-  .arrow{align-self:center;color:#524e42;font-size:16px}
   .casc-cap{color:#6f6a5a;font-size:11px;margin:8px 0 0}
   .casc-hist div{font-size:12px;color:#b8b2a0;padding:3px 0;border-bottom:1px solid #141416}
-  .extent{display:flex;gap:4px;flex-wrap:wrap}
-  .eseg{flex:1;min-width:46px;text-align:center;padding:7px 2px;font-size:10px;letter-spacing:1px;border:1px solid #2a2a20;color:#6f6a5a}
-  .eseg.golden{border-color:#3fbf6f;color:#3fbf6f;background:rgba(63,191,111,.08)}
-  .eseg.death{border-color:#e0564f;color:#e0564f;background:rgba(224,86,79,.08)}
-  .eseg.dim{opacity:.35;background:none}
-  .eseg.pend{border-color:#c9a227;box-shadow:inset 0 0 0 1px #c9a227}
-  .eseg .pdot{display:block;font-size:8px;color:#c9a227;letter-spacing:0;margin-top:3px;font-weight:600}
+  .shead-op{font-size:11px;color:#c9a227;font-weight:600;margin:0 0 9px}
+  .shead-op b{color:#f5edd6}
+  .spine{border:1px solid #2a2a20;background:#0e0e11}
+  .srow{display:grid;grid-template-columns:38px 7px 1fr auto;gap:9px;align-items:center;padding:8px 11px;border-bottom:1px solid #17171a}
+  .srow:last-child{border-bottom:none}
+  .srow.dim{opacity:.5}
+  .stf{font-size:12px;font-weight:700;letter-spacing:1px;color:#8a8375;text-align:right}
+  .srow.fulcrum .stf{color:#c9a227}
+  .sbar{align-self:stretch;min-height:22px;background:#23232a;border-radius:2px}
+  .srow.golden .sbar{background:#3fbf6f}.srow.death .sbar{background:#e0564f}
+  .smid{min-width:0}
+  .sstatus{font-size:12px;font-weight:600;color:#cfc9b8}
+  .srow.golden .dirc{color:#3fbf6f}.srow.death .dirc{color:#e0564f}
+  .sstats{font-size:10px;color:#6f6a5a;margin-top:2px}
+  .sstats b{color:#9a927e;font-weight:600}
+  .sright{text-align:right;white-space:nowrap;font-size:10px;color:#6f6a5a;line-height:1.5}
+  .sodds b{color:#c9a227}
+  .scd{color:#c9a227}
+  .srow.fulcrum{background:rgba(201,162,39,.06);box-shadow:inset 3px 0 0 #c9a227}
+  .spay{display:inline-block;font-size:9px;letter-spacing:.5px;padding:1px 5px;border:1px solid #2a2a20;color:#6f6a5a;margin-left:6px;border-radius:2px;vertical-align:middle}
+  .spay.on{border-color:#c9a227;color:#c9a227}
   .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
   .foot p{margin:0 0 7px}
 </style></head><body><div class="wrap">
 <h1>TON618 &middot; BTC CASCADE <button id="alerts" onclick="askNotify()">ENABLE ALERTS</button></h1>
 <div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
 <div class="findings">
-<div><span class="k">1 &middot; EACH CHART IS A GATE</span>When a move flips one chart, the only race that matters is whether the <i>next</i> chart up flips before the current chart (the frontier) flips back. Lower charts can whipsaw and re-catch up &mdash; they don't break the cascade. Measured odds of passing each gate: 5m&rarr;10m <span class="g">~61%</span> &middot; 10m&rarr;15m <span class="g">~73%</span> &middot; 15m&rarr;30m <span class="g">~66%</span> &middot; 30m&rarr;45m <span class="g">~79%</span> &middot; 45m&rarr;1h <span class="g">~77%</span> &middot; 1h&rarr;2h <span class="g">~53%</span> &middot; 2h&rarr;3h <span class="g">~82%</span> &middot; 3h&rarr;4h <span class="g">~92%</span>. The 1m is a tripwire (only <span class="g">28%</span> of its crosses even reach the 5m) and the daily is a wall (<span class="g">~17%</span>) &mdash; only true regime changes get through. The 1h&rarr;2h gate splits by direction: down-moves pass ~71%, up-moves only ~41%.</div>
+<div><span class="k">1 &middot; EACH CHART IS A GATE</span>When a move flips one chart, the only race that matters is whether the <i>next</i> chart up flips before the current chart (the frontier) flips back. Lower charts can whipsaw and re-catch up &mdash; they don't break the cascade. Measured odds the move actually <i>propagates forward</i> through each gate (a fresh same-direction cross prints on the next chart inside its window): 5m&rarr;10m <span class="g">~43%</span> &middot; 10m&rarr;15m <span class="g">~56%</span> &middot; 15m&rarr;30m <span class="g">~48%</span> &middot; 30m&rarr;45m <span class="g">~62%</span> &middot; 45m&rarr;1h <span class="g">~57%</span> &middot; 1h&rarr;2h <span class="g">~35%</span> &middot; 2h&rarr;3h <span class="g">~65%</span> &middot; 3h&rarr;4h <span class="g">~80%</span> (gates at 2h and up rest on small samples). Counting a chart as "passed" whenever it is merely <i>already</i> in the same direction runs much higher &mdash; but that is backdrop, not forward propagation. The 1m is a tripwire (most of its crosses never even reach the 5m) and the daily is a wall &mdash; only true regime changes get through. The 1h&rarr;2h gate splits sharply by direction: down-moves propagate ~40%, up-moves only ~30% &mdash; sell-offs drag charts down faster than rallies pull them up.</div>
 <div><span class="k">2 &middot; IF RSI AGREES WITH THE CROSS, THE TREND LASTS LONGER</span>Check RSI at the moment a cross happens. If it already agrees with the cross &mdash; above 60 on a golden cross, below 40 on a death cross &mdash; the new trend runs noticeably longer before it reverses. If RSI disagrees, the cross usually dies early. This is the most reliable pattern in the library.</div>
 <div><span class="k">3 &middot; DON'T BUY A GOLDEN CROSS THAT ARRIVES OVERBOUGHT</span>On the 15-minute to 1-hour charts, a golden cross that shows up with RSI already above 60 is usually a bad buy: on average, price is <span class="g">0.45% lower</span> 50 bars later. The trend itself often keeps going (see #2) &mdash; the problem is you're paying a stretched price for it.</div>
 <div><span class="k">4 &middot; SMALL CHARTS GIVE WARNING TIME</span>Passing one gate does not guarantee the next &mdash; each gate is its own draw (see #1). But almost every big-chart flip was preceded by the small charts flipping first: typically about <span class="g">1.5 days</span> of warning before the 1-hour flips and about <span class="g">6 days</span> before the 4-hour flips. Use the small charts as an early-warning system for staging entries and exits.</div>
@@ -68,7 +73,7 @@
 <table><thead><tr><th>TF</th><th>STATE</th><th>GAP %</th><th>50-SLOPE %</th><th>RSI14</th><th>VOL &times;20</th><th>BARS SINCE CROSS</th></tr></thead>
 <tbody id="ladder"></tbody></table>
 <h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
-<h2>CASCADE TRACKER</h2><div id="extent"></div><div id="casc"></div>
+<h2>CASCADE TRACKER</h2><div id="casc"></div>
 <div class="casc-cap">Gate logic: a cascade starts at the most recent 5m cross and advances chart by chart. Only the frontier (the highest chart reached) matters &mdash; the cascade stays alive while the frontier holds its direction, dies if the frontier flips back before the next chart crosses, and completes at the 4h. Lower charts flipping back does not break it. Charts already in the move's direction count as aligned. Measured gate odds are shown on the open gate.</div>
 <div class="foot">
 <p>Market data: Coinbase Exchange public API, computed in-browser.</p>
@@ -144,6 +149,8 @@ function analyze(tf,bars){
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
 function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
+function fmtDur(s){s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d>0?d+'d '+h+'h':h>0?h+'h '+m+'m':m+'m '+(s%60)+'s'}
+function tickCds(){const now=Date.now()/1000;document.querySelectorAll('.cd[data-dl]').forEach(el=>{const s=(+el.dataset.dl)-now,lbl=el.dataset.lbl||'closes in',exp=el.dataset.exp||'window closed';el.textContent=s<=0?exp:lbl+' '+fmtDur(s)})}
 function stateAt(crosses,t,fallback){
   let last=null;
   for(const c of crosses){if(c.t<=t)last=c;else break}
@@ -152,22 +159,35 @@ function stateAt(crosses,t,fallback){
   return fallback;
 }
 const CHAIN=['5m','10m','15m','30m','45m','1h','2h','3h','4h'];
-const GATE_ODDS={'10m':61,'15m':73,'30m':66,'45m':79,'1h':77,'2h':53,'3h':82,'4h':92};
+// Fine-ladder gate stats measured from the cross-event library (btc_cross_events.xlsx),
+// keyed by DESTINATION chart, split by direction {u:up/golden, d:down/death}:
+//   fwd   = % of source crosses that PROPAGATE (a fresh same-dir cross prints on the next
+//           chart) within the window, before the frontier flips back  <- "moving forward"
+//   state = % where the next chart is same-direction at all (already aligned OR crosses) <- backdrop
+//   n     = sample size (gates at 2h+ are thin, n<15 flagged)
+// WIN_H = measurement window in hours (288x the source-chart bar, matching the coarse chain).
+const GATE_ODDS={"10m":{u:{fwd:43,state:71,n:357},d:{fwd:43,state:74,n:356}},"15m":{u:{fwd:54,state:78,n:167},d:{fwd:58,state:80,n:166}},"30m":{u:{fwd:49,state:74,n:108},d:{fwd:48,state:77,n:107}},"45m":{u:{fwd:62,state:80,n:56},d:{fwd:62,state:84,n:56}},"1h":{u:{fwd:61,state:79,n:38},d:{fwd:53,state:84,n:38}},"2h":{u:{fwd:30,state:47,n:30},d:{fwd:40,state:80,n:30}},"3h":{u:{fwd:64,state:64,n:11},d:{fwd:67,state:92,n:12}},"4h":{u:{fwd:86,state:86,n:7},d:{fwd:75,state:88,n:8}}};
+const WIN_H={'10m':24,'15m':48,'30m':72,'45m':144,'1h':216,'2h':288,'3h':576,'4h':864};
+const gd=(tf,dir)=>{const g=GATE_ODDS[tf];return g?(dir==='golden'?g.u:g.d):null};
+function fwdPath(frontier,dir){const fi=CHAIN.indexOf(frontier);const o={};let cum=1;for(let i=fi+1;i<CHAIN.length;i++){const g=gd(CHAIN[i],dir);if(!g)break;cum*=g.fwd/100;o[CHAIN[i]]=Math.round(cum*100)}return o}
 function buildCascades(tfX,cur){
   const out=[];
   for(const o of (tfX['5m']||[])){
     const dir=o.type;
     const casc={dir,origin:o,rungs:[{tf:'5m',status:'hit',t:o.t}],state:'in_progress',frontier:'5m'};
-    let ft='5m',t=o.t;
+    let ft='5m',t=o.t,ftT=o.t;
     for(let i=1;i<CHAIN.length;i++){
       const tf=CHAIN[i];
-      if(stateAt(tfX[tf]||[],t,cur[tf])===dir){casc.rungs.push({tf,status:'aligned',t});ft=tf;continue}
+      if(stateAt(tfX[tf]||[],t,cur[tf])===dir){casc.rungs.push({tf,status:'aligned',t});ft=tf;
+        const pri=(tfX[tf]||[]).filter(c=>c.type===dir&&c.t<=t);ftT=pri.length?pri[pri.length-1].t:ftT;continue}
       const dieC=(tfX[ft]||[]).find(x=>x.t>t&&x.type!==dir);
       const die=dieC?dieC.t:Infinity;
       const hit=(tfX[tf]||[]).find(c=>c.type===dir&&c.t>t&&c.t<=die);
-      if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t;ft=tf;continue}
-      if(die!==Infinity){casc.rungs.push({tf,status:'failed',diedAt:die,frontier:ft});casc.state='invalidated'}
-      else{casc.rungs.push({tf,status:'open',frontier:ft})}
+      if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t;ft=tf;ftT=hit.t;continue}
+      if(die!==Infinity){casc.rungs.push({tf,status:'failed',diedAt:die,frontier:ft});casc.state='invalidated';break}
+      const deadline=ftT+(WIN_H[tf]||0)*3600;
+      if(Date.now()/1000>deadline){casc.rungs.push({tf,status:'timedout',frontier:ft,deadline});casc.state='invalidated'}
+      else{casc.rungs.push({tf,status:'open',frontier:ft,ftT,deadline})}
       break;
     }
     if(casc.rungs.length===CHAIN.length&&casc.rungs.every(r=>r.status==='hit'||r.status==='aligned'))casc.state='completed';
@@ -176,57 +196,60 @@ function buildCascades(tfX,cur){
   }
   return out.sort((a,b)=>b.origin.t-a.origin.t);
 }
-function renderExtent(rows){
-  const v=rows.filter(r=>r.state==='golden'||r.state==='death');
-  if(!v.length)return;
-  // anchor the run on the 5m chart (the cascade origin); the 1m is too
-  // whipsaw-prone to define the move's direction
-  let a=v.findIndex(r=>r.tf==='5m');if(a<0)a=0;
-  const dir=v[a].state;let ext=1;
-  for(let i=a+1;i<v.length;i++){if(v[i].state===dir)ext++;else break}
-  const top=v[a+ext-1].tf,next=a+ext<v.length?v[a+ext].tf:null;
-  const head=(dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>')+
-    ' &nbsp;CASCADED OUT TO THE '+top.toUpperCase()+' CHART'+(next?' &mdash; NEXT RUNG: '+next.toUpperCase():' &mdash; FULL LADDER');
-  const segs=v.map((r,i)=>{
-    const bright=(i>=a&&i<a+ext)||(i<a&&r.state===dir);
-    const pend=r.pending===dir;
-    const dim=!bright&&!pend;
-    return '<div class="eseg '+r.state+(dim?' dim':'')+(pend?' pend':'')+'">'+r.tf.toUpperCase()+
-      (pend?'<span class="pdot">&#9679; CROSS PENDING</span>':'')+'</div>';
-  }).join('');
-  document.getElementById('extent').innerHTML='<div class="casc"><div class="casc-head">'+head+
-    '</div><div class="extent">'+segs+'</div><div class="casc-cap" style="margin-top:8px">Bright rungs = the unbroken run of same-direction charts counting up from the 5m (the cascade origin). Dim rungs sit beyond the break. The 1m is the tripwire &mdash; it flips first and dims first when a reversal attempt starts. A gold <b style="color:#c9a227">&#9679; CROSS PENDING</b> rung has already reclaimed both its 50 &amp; 200 SMAs in the cascade&rsquo;s direction but the scored cross hasn&rsquo;t printed yet &mdash; leading pressure toward the next rung, shown without changing the scored definition.</div></div>';
-}
 function renderCascade(tfX,rows){
-  renderExtent(rows);
-  const cur={};rows.forEach(r=>cur[r.tf]=r.state);
+  const cur={},S={};rows.forEach(r=>{cur[r.tf]=r.state;S[r.tf]=r});
   const el=document.getElementById('casc');
   const cs=buildCascades(tfX,cur);
   if(!cs.length){el.innerHTML='<div class="sub">no 5m cascade origin detected in loaded history</div>';return}
-  const c=cs[0];
-  const dirW=c.dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>';
+  const c=cs[0],dir=c.dir;
   const openRung=c.rungs.find(r=>r.status==='open');
+  const fulc=openRung?openRung.tf:null;
+  const nextUp=fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null;
+  const fo=fwdPath(c.frontier,dir);
+  // projected must-reach-by deadlines: each forward gate's window opens (worst case)
+  // when the prior rung hits its own deadline, so they stack cumulatively.
+  const proj={};
+  if(openRung){let d=openRung.deadline;proj[fulc]=d;const fi=CHAIN.indexOf(fulc);for(let j=fi+1;j<CHAIN.length;j++){d+=(WIN_H[CHAIN[j]]||0)*3600;proj[CHAIN[j]]=d}}
+  const topDl=proj['4h'];
+  const glyph=dir==='golden'?'&#9650; LADDER &middot; UPSIDE':'&#9875; ANCHOR &middot; DOWNSIDE';
   const stW=c.state==='completed'?'CASCADE COMPLETED &mdash; REACHED THE 4H CHART':
     c.state==='invalidated'?'CASCADE FAILED &mdash; THE '+c.frontier.toUpperCase()+' FRONTIER FLIPPED BACK':
-    'CASCADE ALIVE &mdash; FRONTIER '+c.frontier.toUpperCase()+(openRung?', GATE OPEN TO '+openRung.tf.toUpperCase():'');
-  const boxes=CHAIN.map((tf,i)=>{
-    const r=c.rungs[i];
-    let cls='rung',st='&mdash;',sub='not reached';
-    if(r){
-      if(r.status==='hit'){cls+=' hit-'+c.dir;st=c.dir==='golden'?'FLIPPED UP':'FLIPPED DOWN';sub=fmtT(r.t)+' UTC'}
-      else if(r.status==='aligned'){cls+=' hit-'+c.dir;st='ALIGNED';sub='already in this state'}
-      else if(r.status==='open'){cls+=' pending';st='GATE OPEN';sub='gate odds ~'+(GATE_ODDS[tf]||'?')+'% &middot; dies if the '+r.frontier+' flips back first'}
-      else{cls+=' expired';st='GATE FAILED';sub='the '+r.frontier+' frontier flipped back '+fmtT(r.diedAt)+' UTC'}
-    }
-    return '<div class="'+cls+'"><div class="tfl">'+tf.toUpperCase()+'</div><div class="st">'+st+'</div><div class="sub2">'+sub+'</div></div>';
-  }).join('<div class="arrow">&rarr;</div>');
+    'CASCADE ALIVE &mdash; FRONTIER '+c.frontier.toUpperCase()+(fulc?', FULCRUM AT '+fulc.toUpperCase():'');
+  const headHtml='<span class="'+(dir==='golden'?'up':'down')+'">'+glyph+'</span> &nbsp;'+stW;
+  const opHtml=(openRung&&topDl!=null)?'<div class="shead-op">FULL CASCADE &rarr; 4H: <b>~'+(fo['4h']!=null?fo['4h']:'?')+'%</b> &middot; overall opportunity window <span class="cd scd" data-dl="'+Math.round(topDl)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span></div>':'';
+  // vertical spine: slow charts on top, fast on the bottom; the cascade climbs (ladder) or drags (anchor) up it
+  const SPINE=['1d','4h','3h','2h','1h','45m','30m','15m','10m','5m','1m'];
+  const spineRows=SPINE.map(tf=>{
+    const ci=CHAIN.indexOf(tf),r=ci>=0?c.rungs[ci]:null,g=gd(tf,dir),stat=S[tf]||{};
+    let rowcls='',statusHtml='',cd='';
+    if(tf==='1m'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; TRIPWIRE';cd='flips first &middot; no anchor'}
+    else if(tf==='1d'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; THE WALL';cd='daily regime gate'}
+    else if(r&&r.status==='hit'){rowcls=dir;statusHtml=tf==='5m'?'<b class="dirc">ORIGIN</b> &middot; '+(dir==='golden'?'golden':'death')+' cross':'<b class="dirc">'+(dir==='golden'?'FLIPPED UP':'FLIPPED DOWN')+'</b>';cd=fmtT(r.t)+' UTC'}
+    else if(r&&r.status==='aligned'){rowcls=dir;statusHtml='<b class="dirc">ALIGNED</b>';cd='in-state on arrival'}
+    else if(r&&r.status==='open'){rowcls=dir+' fulcrum';statusHtml='<b style="color:#c9a227">&#9670; FULCRUM</b> &middot; needs a '+(dir==='golden'?'golden':'death')+' cross'+(nextUp?' &rarr; '+nextUp.toUpperCase():'');cd='<span class="cd scd" data-dl="'+Math.round(r.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
+    else if(r&&r.status==='timedout'){rowcls='dim';statusHtml='WINDOW CLOSED';cd='the '+(WIN_H[tf]||0)+'h window elapsed'}
+    else if(r&&r.status==='failed'){rowcls='dim';statusHtml='GATE FAILED';cd='frontier flipped '+fmtT(r.diedAt)}
+    else{rowcls=(stat.state||'')+' dim';statusHtml='<b>~'+(fo[tf]!=null?fo[tf]:'?')+'%</b> forward'+(g&&g.n<15?' &middot; thin':'');cd=proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
+    let pay='';
+    if(tf==='2h'||tf==='3h'||tf==='4h')pay='<span class="spay'+(dir==='death'?' on':'')+'">bear-pay</span>';
+    else if(tf==='1d')pay='<span class="spay'+(dir==='golden'?' on':'')+'">bull-pay</span>';
+    const statsLine=stat.state?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; RSI <b>'+stat.rsi+'</b> &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
+    const oddsHtml=g?'<span class="sodds">FWD <b>'+g.fwd+'%</b> &middot; state '+g.state+'%'+(g.n<15?' &middot; n='+g.n:'')+'</span><br>':'';
+    return '<div class="srow '+rowcls+'"><div class="stf">'+tf.toUpperCase()+'</div><div class="sbar"></div>'+
+      '<div class="smid"><div class="sstatus">'+statusHtml+pay+'</div><div class="sstats">'+statsLine+'</div></div>'+
+      '<div class="sright">'+oddsHtml+'<span class="scd">'+cd+'</span></div></div>';
+  }).join('');
+  const fg=fulc?gd(fulc,dir):null;
+  const fulcNote=fulc?'<b style="color:#c9a227">&#9670; FULCRUM: '+fulc.toUpperCase()+'</b> &mdash; a '+(dir==='golden'?'golden':'death')+' cross here advances the cascade'+(nextUp?' to contest the '+nextUp.toUpperCase():'')+(fg?' &mdash; <b>~'+fg.fwd+'% chance it propagates</b> within the '+(WIN_H[fulc]||0)+'h window (backdrop state ~'+fg.state+'%'+(fg.n<15?', thin n='+fg.n:'')+'). ':'. '):(c.state==='completed'?'Reached the top of the ladder. ':c.state==='invalidated'?'No open gate &mdash; the cascade broke. ':'');
+  const model='<b>FWD&percnt;</b> = measured chance the cross actually MOVES FORWARD to that chart within its window, before the frontier flips back &mdash; forward rungs compound these (each gate an independent draw, Finding&nbsp;1). <b>STATE&percnt;</b> = whether the chart is merely same-direction (aligned or crosses) &mdash; backdrop, not propagation. Fast charts sit at the bottom; the cascade climbs (&#9650; ladder) or drags (&#9875; anchor) up the same spine. The <b>bear-pay / bull-pay</b> tags mark where each direction historically pays (Finding&nbsp;6). The 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30 &mdash; indicative only.';
   const hist=cs.slice(1,9).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
     return '<div>'+fmtT(x.origin.t)+'  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
   }).join('');
-  el.innerHTML='<div class="casc"><div class="casc-head">'+dirW+' &nbsp;'+stW+'</div><div class="rungs">'+boxes+'</div></div>'+
+  el.innerHTML='<div class="casc"><div class="casc-head">'+headHtml+'</div>'+opHtml+'<div class="spine">'+spineRows+'</div><div class="casc-cap" style="margin-top:10px">'+fulcNote+model+'</div></div>'+
     (hist?'<h2>RECENT CASCADE ATTEMPTS</h2><div class="casc-hist">'+hist+'</div>':'');
+  tickCds();
 }
 function render(){
   const rows=[],all=[],tfX={};
@@ -273,7 +296,7 @@ function askNotify(){Notification.requestPermission().then(p=>{document.getEleme
     if(Notification.permission==='granted')document.getElementById('alerts').textContent='ALERTS ON';
     for(const tf in GRAN)store[tf]=await fetchCandles(GRAN[tf],NEED[tf]);
     render();ticker();
-    setInterval(refresh,60000);setInterval(ticker,15000);
+    setInterval(refresh,60000);setInterval(ticker,15000);setInterval(tickCds,1000);
   }catch(e){document.getElementById('err').textContent='load error: '+e}
 })();
 </script></body></html>
