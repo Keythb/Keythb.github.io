@@ -149,7 +149,9 @@ function analyze(tf,bars){
     pending,since:last?{bars:cl.filter(b=>b.t>last.t).length,type:last.type}:null},crosses};
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
-function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
+const PT_FMT=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'});
+const PT_CLK=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZoneName:'short'});
+function fmtT(t){return PT_FMT.format(new Date(t*1000)).replace(', ',' ')}
 function fmtDur(s){s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d>0?d+'d '+h+'h':h>0?h+'h '+m+'m':m+'m '+(s%60)+'s'}
 function tickCds(){const now=Date.now()/1000;document.querySelectorAll('.cd[data-dl]').forEach(el=>{const s=(+el.dataset.dl)-now,lbl=el.dataset.lbl||'closes in',exp=el.dataset.exp||'window closed';el.textContent=s<=0?exp:lbl+' '+fmtDur(s)})}
 function stateAt(crosses,t,fallback){
@@ -225,7 +227,7 @@ function renderCascade(tfX,rows){
     let rowcls='',statusHtml='',cd='';
     if(tf==='1m'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; TRIPWIRE';cd='flips first &middot; no anchor'}
     else if(tf==='1d'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; THE WALL';cd='daily regime gate'}
-    else if(r&&r.status==='hit'){rowcls=dir;statusHtml=tf==='5m'?'<b class="dirc">ORIGIN</b> &middot; '+(dir==='golden'?'golden':'death')+' cross':'<b class="dirc">'+(dir==='golden'?'FLIPPED UP':'FLIPPED DOWN')+'</b>';cd=fmtT(r.t)+' UTC'}
+    else if(r&&r.status==='hit'){rowcls=dir;statusHtml=tf==='5m'?'<b class="dirc">ORIGIN</b> &middot; '+(dir==='golden'?'golden':'death')+' cross':'<b class="dirc">'+(dir==='golden'?'FLIPPED UP':'FLIPPED DOWN')+'</b>';cd=fmtT(r.t)}
     else if(r&&r.status==='aligned'){rowcls=dir;statusHtml='<b class="dirc">ALIGNED</b>';cd='in-state on arrival'}
     else if(r&&r.status==='open'){rowcls=dir+' fulcrum';statusHtml='<b style="color:#c9a227">&#9670; FULCRUM</b> &middot; needs a '+(dir==='golden'?'golden':'death')+' cross'+(nextUp?' &rarr; '+nextUp.toUpperCase():'');cd='<span class="cd scd" data-dl="'+Math.round(r.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
     else if(r&&r.status==='timedout'){rowcls='dim';statusHtml='WINDOW CLOSED';cd='the '+(WIN_H[tf]||0)+'h window elapsed'}
@@ -284,7 +286,7 @@ function render(){
 async function ticker(){
   try{const t=await (await fetch(API+'/ticker')).json();
     document.getElementById('price').textContent='$'+Number(t.price).toLocaleString();
-    document.getElementById('meta').textContent='bid '+t.bid+'  ask '+t.ask+'  ·  updated '+new Date().toISOString().slice(11,19)+' UTC';
+    document.getElementById('meta').textContent='bid '+t.bid+'  ask '+t.ask+'  ·  updated '+PT_CLK.format(new Date());
   }catch(e){}
 }
 async function refresh(){
