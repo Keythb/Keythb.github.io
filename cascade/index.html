@@ -52,6 +52,7 @@
   .srow.fulcrum{background:rgba(201,162,39,.06);box-shadow:inset 3px 0 0 #c9a227}
   .spay{display:inline-block;font-size:9px;letter-spacing:.5px;padding:1px 5px;border:1px solid #2a2a20;color:#6f6a5a;margin-left:6px;border-radius:2px;vertical-align:middle}
   .spay.on{border-color:#c9a227;color:#c9a227}
+  .spend{display:inline-block;font-size:9px;letter-spacing:.5px;color:#c9a227;font-weight:600;margin-left:6px;vertical-align:middle}
   .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
   .foot p{margin:0 0 7px}
 </style></head><body><div class="wrap">
@@ -230,18 +231,19 @@ function renderCascade(tfX,rows){
     else if(r&&r.status==='timedout'){rowcls='dim';statusHtml='WINDOW CLOSED';cd='the '+(WIN_H[tf]||0)+'h window elapsed'}
     else if(r&&r.status==='failed'){rowcls='dim';statusHtml='GATE FAILED';cd='frontier flipped '+fmtT(r.diedAt)}
     else{rowcls=(stat.state||'')+' dim';statusHtml='<b>~'+(fo[tf]!=null?fo[tf]:'?')+'%</b> forward'+(g&&g.n<15?' &middot; thin':'');cd=proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
+    const pend=stat.pending===dir?'<span class="spend">&#9679; CROSS PENDING</span>':'';
     let pay='';
     if(tf==='2h'||tf==='3h'||tf==='4h')pay='<span class="spay'+(dir==='death'?' on':'')+'">bear-pay</span>';
     else if(tf==='1d')pay='<span class="spay'+(dir==='golden'?' on':'')+'">bull-pay</span>';
     const statsLine=stat.state?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; RSI <b>'+stat.rsi+'</b> &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
     const oddsHtml=g?'<span class="sodds">FWD <b>'+g.fwd+'%</b> &middot; state '+g.state+'%'+(g.n<15?' &middot; n='+g.n:'')+'</span><br>':'';
     return '<div class="srow '+rowcls+'"><div class="stf">'+tf.toUpperCase()+'</div><div class="sbar"></div>'+
-      '<div class="smid"><div class="sstatus">'+statusHtml+pay+'</div><div class="sstats">'+statsLine+'</div></div>'+
+      '<div class="smid"><div class="sstatus">'+statusHtml+pend+pay+'</div><div class="sstats">'+statsLine+'</div></div>'+
       '<div class="sright">'+oddsHtml+'<span class="scd">'+cd+'</span></div></div>';
   }).join('');
   const fg=fulc?gd(fulc,dir):null;
   const fulcNote=fulc?'<b style="color:#c9a227">&#9670; FULCRUM: '+fulc.toUpperCase()+'</b> &mdash; a '+(dir==='golden'?'golden':'death')+' cross here advances the cascade'+(nextUp?' to contest the '+nextUp.toUpperCase():'')+(fg?' &mdash; <b>~'+fg.fwd+'% chance it propagates</b> within the '+(WIN_H[fulc]||0)+'h window (backdrop state ~'+fg.state+'%'+(fg.n<15?', thin n='+fg.n:'')+'). ':'. '):(c.state==='completed'?'Reached the top of the ladder. ':c.state==='invalidated'?'No open gate &mdash; the cascade broke. ':'');
-  const model='<b>FWD&percnt;</b> = measured chance the cross actually MOVES FORWARD to that chart within its window, before the frontier flips back &mdash; forward rungs compound these (each gate an independent draw, Finding&nbsp;1). <b>STATE&percnt;</b> = whether the chart is merely same-direction (aligned or crosses) &mdash; backdrop, not propagation. Fast charts sit at the bottom; the cascade climbs (&#9650; ladder) or drags (&#9875; anchor) up the same spine. The <b>bear-pay / bull-pay</b> tags mark where each direction historically pays (Finding&nbsp;6). The 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30 &mdash; indicative only.';
+  const model='<b>FWD&percnt;</b> = measured chance the cross actually MOVES FORWARD to that chart within its window, before the frontier flips back &mdash; forward rungs compound these (each gate an independent draw, Finding&nbsp;1). <b>STATE&percnt;</b> = whether the chart is merely same-direction (aligned or crosses) &mdash; backdrop, not propagation. Fast charts sit at the bottom; the cascade climbs (&#9650; ladder) or drags (&#9875; anchor) up the same spine. The <b>bear-pay / bull-pay</b> tags mark where each direction historically pays (Finding&nbsp;6). The 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). A gold <b style="color:#c9a227">&#9679; CROSS PENDING</b> row has already reclaimed both its 50 &amp; 200 SMAs in the cascade&rsquo;s direction but the scored cross hasn&rsquo;t printed yet &mdash; leading pressure on that gate. Gates at 2h+ rest on n=7&ndash;30 &mdash; indicative only.';
   const hist=cs.slice(1,9).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
