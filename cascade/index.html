@@ -30,7 +30,7 @@
   .casc-head{font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:12px;color:#f5edd6}
   .casc-head .up{color:#3fbf6f}.casc-head .down{color:#e0564f}
   .rungs{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
-  .rung{flex:1;min-width:110px;border:1px solid #2a2a20;padding:10px;text-align:center}
+  .rung{flex:1;min-width:88px;border:1px solid #2a2a20;padding:10px 6px;text-align:center}
   .rung .tfl{font-size:11px;letter-spacing:2px;color:#8a8375;margin-bottom:4px}
   .rung .st{font-size:13px;font-weight:600;color:#6f6a5a}
   .rung.hit-golden{border-color:#3fbf6f}.rung.hit-golden .st{color:#3fbf6f}
@@ -45,16 +45,18 @@
   .eseg.golden{border-color:#3fbf6f;color:#3fbf6f;background:rgba(63,191,111,.08)}
   .eseg.death{border-color:#e0564f;color:#e0564f;background:rgba(224,86,79,.08)}
   .eseg.dim{opacity:.35;background:none}
+  .eseg.pend{border-color:#c9a227;box-shadow:inset 0 0 0 1px #c9a227}
+  .eseg .pdot{display:block;font-size:8px;color:#c9a227;letter-spacing:0;margin-top:3px;font-weight:600}
   .foot{color:#524e42;font-size:10px;margin-top:28px;line-height:1.55}
   .foot p{margin:0 0 7px}
 </style></head><body><div class="wrap">
 <h1>TON618 &middot; BTC CASCADE <button id="alerts" onclick="askNotify()">ENABLE ALERTS</button></h1>
 <div class="sub">50/200 SMA multi-timeframe watch &middot; Coinbase BTC/USD &middot; closed bars only &middot; computed in-browser</div>
 <div class="findings">
-<div><span class="k">1 &middot; HOW OFTEN A CROSS SPREADS TO THE NEXT CHART</span>When the 5-minute chart makes a cross, the 15-minute chart makes the same cross within a day about <span class="g">40%</span> of the time. A 15-minute cross carries to the 1-hour chart within 3 days about <span class="g">35%</span> of the time. A 1-hour cross carries to the 4-hour chart within 10 days about <span class="g">25%</span> of the time. Most crosses never make it past their own chart &mdash; one that keeps climbing is the exception worth watching.</div>
+<div><span class="k">1 &middot; EACH CHART IS A GATE</span>When a move flips one chart, the only race that matters is whether the <i>next</i> chart up flips before the current chart (the frontier) flips back. Lower charts can whipsaw and re-catch up &mdash; they don't break the cascade. Measured odds of passing each gate: 5m&rarr;10m <span class="g">~61%</span> &middot; 10m&rarr;15m <span class="g">~73%</span> &middot; 15m&rarr;30m <span class="g">~66%</span> &middot; 30m&rarr;45m <span class="g">~79%</span> &middot; 45m&rarr;1h <span class="g">~77%</span> &middot; 1h&rarr;2h <span class="g">~53%</span> &middot; 2h&rarr;3h <span class="g">~82%</span> &middot; 3h&rarr;4h <span class="g">~92%</span>. The 1m is a tripwire (only <span class="g">28%</span> of its crosses even reach the 5m) and the daily is a wall (<span class="g">~17%</span>) &mdash; only true regime changes get through. The 1h&rarr;2h gate splits by direction: down-moves pass ~71%, up-moves only ~41%.</div>
 <div><span class="k">2 &middot; IF RSI AGREES WITH THE CROSS, THE TREND LASTS LONGER</span>Check RSI at the moment a cross happens. If it already agrees with the cross &mdash; above 60 on a golden cross, below 40 on a death cross &mdash; the new trend runs noticeably longer before it reverses. If RSI disagrees, the cross usually dies early. This is the most reliable pattern in the library.</div>
 <div><span class="k">3 &middot; DON'T BUY A GOLDEN CROSS THAT ARRIVES OVERBOUGHT</span>On the 15-minute to 1-hour charts, a golden cross that shows up with RSI already above 60 is usually a bad buy: on average, price is <span class="g">0.45% lower</span> 50 bars later. The trend itself often keeps going (see #2) &mdash; the problem is you're paying a stretched price for it.</div>
-<div><span class="k">4 &middot; SMALL CHARTS GIVE WARNING TIME, NOT BETTER ODDS</span>A cascade that already climbed one rung is <i>not</i> more likely to climb the next &mdash; every step stays roughly the same 40/35/25% draw. But almost every big-chart flip was preceded by the small charts flipping first: typically about <span class="g">1.5 days</span> of warning before the 1-hour flips and about <span class="g">6 days</span> before the 4-hour flips. Use the small charts as an early-warning system for staging entries and exits.</div>
+<div><span class="k">4 &middot; SMALL CHARTS GIVE WARNING TIME</span>Passing one gate does not guarantee the next &mdash; each gate is its own draw (see #1). But almost every big-chart flip was preceded by the small charts flipping first: typically about <span class="g">1.5 days</span> of warning before the 1-hour flips and about <span class="g">6 days</span> before the 4-hour flips. Use the small charts as an early-warning system for staging entries and exits.</div>
 <div><span class="k">5 &middot; A CROSS BY ITSELF IS A COIN FLIP</span>On any chart faster than the daily, a cross alone tells you nothing about direction &mdash; price is roughly 50/50 afterward. A cross tells you what state the market is in and when to pay attention. It is not a buy or sell signal on its own.</div>
 <div><span class="k">6 &middot; BEAR MOVES PAY ON SMALL CHARTS, BULL MOVES PAY ON BIG ONES</span>The machinery is direction-blind (odds #1 and the RSI rule #2 are the same both ways), but the payoffs are not. On the 2h&ndash;4h charts, death crosses averaged <span class="g">+2.9%</span> as shorts while golden crosses averaged <span class="g">&minus;2.6%</span> as longs &mdash; sell-offs move farther and faster (liquidations). On the daily chart it flips: golden crosses won 62% of the time averaging <span class="g">+50%</span>, while shorting a daily death cross averaged <span class="g">&minus;19.5%</span> &mdash; by the time the daily crosses down, the decline is usually almost over. Smaller samples than the other findings; re-tested as the library grows.</div>
 </div>
@@ -67,7 +69,7 @@
 <tbody id="ladder"></tbody></table>
 <h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
 <h2>CASCADE TRACKER</h2><div id="extent"></div><div id="casc"></div>
-<div class="casc-cap">A cascade starts at the most recent 5m cross and must reach each next chart inside its measured window (15m within 24h &middot; 1h within 72h of the 15m flip &middot; 4h within 10 days of the 1h flip) or it is invalidated. A chart that is already in the cascade's direction when it gets there counts as aligned. Historical odds per fresh rung: ~40% / ~35% / ~25%.</div>
+<div class="casc-cap">Gate logic: a cascade starts at the most recent 5m cross and advances chart by chart. Only the frontier (the highest chart reached) matters &mdash; the cascade stays alive while the frontier holds its direction, dies if the frontier flips back before the next chart crosses, and completes at the 4h. Lower charts flipping back does not break it. Charts already in the move's direction count as aligned. Measured gate odds are shown on the open gate.</div>
 <div class="foot">
 <p>Market data: Coinbase Exchange public API, computed in-browser.</p>
 <p><b>Information only.</b> TON618 Capital. This dashboard is for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
@@ -132,9 +134,13 @@ function analyze(tf,bars){
   if(f===null||s===null)return{row:{tf,state:'n/a'},crosses};
   const lb=Math.min(10,i),f0=smaAt(c,i-lb,50);
   const last=crosses.length?crosses[crosses.length-1]:null;
+  // stage-one / cross-pending: price has reclaimed both SMAs but the
+  // 50/200 cross hasn't printed yet (the precursor to a fresh cross)
+  const px=c[i];
+  const pending=(f<s&&px>f&&px>s)?'golden':(f>s&&px<f&&px<s)?'death':null;
   return{row:{tf,state:f>s?'golden':'death',gap:((f-s)/s*100).toFixed(2),
     slope:f0?((f/f0-1)*100).toFixed(2):'',rsi:rsi[i]?rsi[i].toFixed(1):'',volx:va?(v[i]/va).toFixed(2):'',
-    since:last?{bars:cl.filter(b=>b.t>last.t).length,type:last.type}:null},crosses};
+    pending,since:last?{bars:cl.filter(b=>b.t>last.t).length,type:last.type}:null},crosses};
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
 function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
@@ -145,21 +151,27 @@ function stateAt(crosses,t,fallback){
   if(crosses.length)return crosses[0].type==='golden'?'death':'golden';
   return fallback;
 }
+const CHAIN=['5m','10m','15m','30m','45m','1h','2h','3h','4h'];
+const GATE_ODDS={'10m':61,'15m':73,'30m':66,'45m':79,'1h':77,'2h':53,'3h':82,'4h':92};
 function buildCascades(tfX,cur){
-  const CHAIN=[['15m',24],['1h',72],['4h',240]];
   const out=[];
   for(const o of (tfX['5m']||[])){
-    const casc={dir:o.type,origin:o,rungs:[{tf:'5m',status:'hit',t:o.t}],state:'in_progress'};
-    let t=o.t;
-    for(const [tf,winH] of CHAIN){
-      const dl=t+winH*3600;
-      const hit=(tfX[tf]||[]).find(c=>c.type===o.type&&c.t>t&&c.t<=dl);
-      if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t}
-      else if(stateAt(tfX[tf]||[],t,cur[tf])===o.type){casc.rungs.push({tf,status:'aligned',t})}
-      else if(Date.now()/1000>dl){casc.rungs.push({tf,status:'expired',deadline:dl});casc.state='invalidated';break}
-      else{casc.rungs.push({tf,status:'pending',deadline:dl});break}
+    const dir=o.type;
+    const casc={dir,origin:o,rungs:[{tf:'5m',status:'hit',t:o.t}],state:'in_progress',frontier:'5m'};
+    let ft='5m',t=o.t;
+    for(let i=1;i<CHAIN.length;i++){
+      const tf=CHAIN[i];
+      if(stateAt(tfX[tf]||[],t,cur[tf])===dir){casc.rungs.push({tf,status:'aligned',t});ft=tf;continue}
+      const dieC=(tfX[ft]||[]).find(x=>x.t>t&&x.type!==dir);
+      const die=dieC?dieC.t:Infinity;
+      const hit=(tfX[tf]||[]).find(c=>c.type===dir&&c.t>t&&c.t<=die);
+      if(hit){casc.rungs.push({tf,status:'hit',t:hit.t});t=hit.t;ft=tf;continue}
+      if(die!==Infinity){casc.rungs.push({tf,status:'failed',diedAt:die,frontier:ft});casc.state='invalidated'}
+      else{casc.rungs.push({tf,status:'open',frontier:ft})}
+      break;
     }
-    if(casc.rungs.length===4&&casc.rungs.every(r=>r.status==='hit'||r.status==='aligned'))casc.state='completed';
+    if(casc.rungs.length===CHAIN.length&&casc.rungs.every(r=>r.status==='hit'||r.status==='aligned'))casc.state='completed';
+    casc.frontier=ft;
     out.push(casc);
   }
   return out.sort((a,b)=>b.origin.t-a.origin.t);
@@ -177,10 +189,13 @@ function renderExtent(rows){
     ' &nbsp;CASCADED OUT TO THE '+top.toUpperCase()+' CHART'+(next?' &mdash; NEXT RUNG: '+next.toUpperCase():' &mdash; FULL LADDER');
   const segs=v.map((r,i)=>{
     const bright=(i>=a&&i<a+ext)||(i<a&&r.state===dir);
-    return '<div class="eseg '+r.state+(bright?'':' dim')+'">'+r.tf.toUpperCase()+'</div>';
+    const pend=r.pending===dir;
+    const dim=!bright&&!pend;
+    return '<div class="eseg '+r.state+(dim?' dim':'')+(pend?' pend':'')+'">'+r.tf.toUpperCase()+
+      (pend?'<span class="pdot">&#9679; CROSS PENDING</span>':'')+'</div>';
   }).join('');
   document.getElementById('extent').innerHTML='<div class="casc"><div class="casc-head">'+head+
-    '</div><div class="extent">'+segs+'</div><div class="casc-cap" style="margin-top:8px">Bright rungs = the unbroken run of same-direction charts counting up from the 5m (the cascade origin). Dim rungs sit beyond the break. The 1m is the tripwire &mdash; it flips first and dims first when a reversal attempt starts.</div></div>';
+    '</div><div class="extent">'+segs+'</div><div class="casc-cap" style="margin-top:8px">Bright rungs = the unbroken run of same-direction charts counting up from the 5m (the cascade origin). Dim rungs sit beyond the break. The 1m is the tripwire &mdash; it flips first and dims first when a reversal attempt starts. A gold <b style="color:#c9a227">&#9679; CROSS PENDING</b> rung has already reclaimed both its 50 &amp; 200 SMAs in the cascade&rsquo;s direction but the scored cross hasn&rsquo;t printed yet &mdash; leading pressure toward the next rung, shown without changing the scored definition.</div></div>';
 }
 function renderCascade(tfX,rows){
   renderExtent(rows);
@@ -188,25 +203,26 @@ function renderCascade(tfX,rows){
   const el=document.getElementById('casc');
   const cs=buildCascades(tfX,cur);
   if(!cs.length){el.innerHTML='<div class="sub">no 5m cascade origin detected in loaded history</div>';return}
-  const c=cs[0],CH=['5m','15m','1h','4h'];
+  const c=cs[0];
   const dirW=c.dir==='golden'?'<span class="up">&#9650; UPSIDE</span>':'<span class="down">&#9660; DOWNSIDE</span>';
+  const openRung=c.rungs.find(r=>r.status==='open');
   const stW=c.state==='completed'?'CASCADE COMPLETED &mdash; REACHED THE 4H CHART':
-    c.state==='invalidated'?'CASCADE INVALIDATED &mdash; DIED AT THE '+c.rungs[c.rungs.length-1].tf.toUpperCase()+' RUNG':
-    'CASCADE IN PROGRESS';
-  const boxes=CH.map((tf,i)=>{
+    c.state==='invalidated'?'CASCADE FAILED &mdash; THE '+c.frontier.toUpperCase()+' FRONTIER FLIPPED BACK':
+    'CASCADE ALIVE &mdash; FRONTIER '+c.frontier.toUpperCase()+(openRung?', GATE OPEN TO '+openRung.tf.toUpperCase():'');
+  const boxes=CHAIN.map((tf,i)=>{
     const r=c.rungs[i];
     let cls='rung',st='&mdash;',sub='not reached';
     if(r){
       if(r.status==='hit'){cls+=' hit-'+c.dir;st=c.dir==='golden'?'FLIPPED UP':'FLIPPED DOWN';sub=fmtT(r.t)+' UTC'}
-      else if(r.status==='aligned'){cls+=' hit-'+c.dir;st='ALREADY ALIGNED';sub='was in this state when the cascade arrived'}
-      else if(r.status==='pending'){cls+=' pending';st='WAITING';sub='must flip within '+Math.max(0,(r.deadline-Date.now()/1000)/3600).toFixed(1)+'h or cascade dies'}
-      else{cls+=' expired';st='EXPIRED';sub='window closed '+fmtT(r.deadline)+' UTC'}
+      else if(r.status==='aligned'){cls+=' hit-'+c.dir;st='ALIGNED';sub='already in this state'}
+      else if(r.status==='open'){cls+=' pending';st='GATE OPEN';sub='gate odds ~'+(GATE_ODDS[tf]||'?')+'% &middot; dies if the '+r.frontier+' flips back first'}
+      else{cls+=' expired';st='GATE FAILED';sub='the '+r.frontier+' frontier flipped back '+fmtT(r.diedAt)+' UTC'}
     }
     return '<div class="'+cls+'"><div class="tfl">'+tf.toUpperCase()+'</div><div class="st">'+st+'</div><div class="sub2">'+sub+'</div></div>';
   }).join('<div class="arrow">&rarr;</div>');
   const hist=cs.slice(1,9).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
-    const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; died at '+x.rungs[x.rungs.length-1].tf:' &hellip; still open';
+    const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
     return '<div>'+fmtT(x.origin.t)+'  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
   }).join('');
   el.innerHTML='<div class="casc"><div class="casc-head">'+dirW+' &nbsp;'+stW+'</div><div class="rungs">'+boxes+'</div></div>'+
