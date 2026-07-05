@@ -49,6 +49,7 @@
   .sstats b.rup{color:#3fbf6f}
   .sstats b.rdn{color:#e0564f}
   .rsiwarn{color:#e8944a;font-weight:700;margin-left:1px;cursor:help}
+  td.rup{color:#3fbf6f;font-weight:600}td.rdn{color:#e0564f;font-weight:600}
   .sright{text-align:right;white-space:nowrap;font-size:10px;color:#6f6a5a;line-height:1.5}
   .sodds b{color:#c9a227}
   .scd{color:#c9a227}
@@ -81,6 +82,7 @@
 <svg id="spark" height="70" viewBox="0 0 760 70" preserveAspectRatio="none"></svg>
 <table><thead><tr><th>TF</th><th>STATE</th><th>GAP %</th><th>50-SLOPE %</th><th>RSI14</th><th>VOL &times;20</th><th>BARS SINCE CROSS</th></tr></thead>
 <tbody id="ladder"></tbody></table>
+<div class="casc-cap">RSI14: <span style="color:#3fbf6f">green</span> = agrees with the state (&ge;60 golden / &le;40 death &mdash; trend runs longer, Finding&nbsp;2) &middot; <span style="color:#e0564f">red</span> = disagrees &middot; <span style="color:#e8944a">&#9888;</span> = golden overbought on 15m&ndash;1h (Finding&nbsp;3, stretched entry).</div>
 <h2>RECENT CROSSES (from loaded history)</h2><div class="feed" id="feed"></div>
 <h2>CASCADE TRACKER</h2><div id="casc"></div>
 <div class="casc-cap">Gate logic: a cascade starts at the most recent 5m cross and advances chart by chart. Only the frontier (the highest chart reached) matters &mdash; the cascade stays alive while the frontier holds its direction, dies if the frontier flips back before the next chart crosses, and completes at the 4h. Lower charts flipping back does not break it. Charts already in the move's direction count as aligned. Measured gate odds are shown on the open gate.</div>
@@ -158,6 +160,18 @@ function analyze(tf,bars){
 }
 function cls(x){return x>0?'pos':(x<0?'neg':'')}
 function fmtT(t){return new Date(t*1000).toISOString().slice(0,16).replace('T',' ')}
+// RSI cue shared by the spine and the current-state table: green when RSI agrees with the
+// direction (>=60 golden / <=40 death, Finding 2), red when it disagrees; a golden cross
+// overbought (>=60) on a 15m-1h chart also gets a stretched-entry warning (Finding 3).
+function rsiCue(tf,dir,rsiStr){
+  const rN=parseFloat(rsiStr);let rc='',rw='';
+  if(!isNaN(rN)&&(dir==='golden'||dir==='death')){
+    const agr=(dir==='golden'&&rN>=60)||(dir==='death'&&rN<=40),dis=(dir==='golden'&&rN<=40)||(dir==='death'&&rN>=60);
+    rc=agr?'rup':(dis?'rdn':'');
+    if(dir==='golden'&&rN>=60&&(tf==='15m'||tf==='30m'||tf==='45m'||tf==='1h'))rw='<span class="rsiwarn" title="golden cross arriving overbought on a 15m&ndash;1h chart &mdash; trend may run but the entry is stretched (Finding 3, measured on 15m&ndash;1h only)">&#9888;</span>';
+  }
+  return {rc,rw};
+}
 function fmtDur(s){s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d>0?d+'d '+h+'h':h>0?h+'h '+m+'m':m+'m '+(s%60)+'s'}
 function tickCds(){const now=Date.now()/1000;document.querySelectorAll('.cd[data-dl]').forEach(el=>{const s=(+el.dataset.dl)-now,lbl=el.dataset.lbl||'closes in',exp=el.dataset.exp||'window closed';el.textContent=s<=0?exp:lbl+' '+fmtDur(s)})}
 function stateAt(crosses,t,fallback){
@@ -262,14 +276,8 @@ function renderCascade(tfX,rows){
     else if(stat.pending==='death')pend='<span class="spend" style="color:#e0564f">&#9679; DEATH PENDING</span>';
     // RSI cue: green when it agrees with the cross (Finding 2, trend runs longer),
     // red when it disagrees; a golden cross with RSI>=60 also gets a stretched-entry warning (Finding 3).
-    const cxDir=isBF?'golden':(isEF?'death':st),rN=parseFloat(stat.rsi);
-    let rc='',rw='';
-    if(!isNaN(rN)&&(cxDir==='golden'||cxDir==='death')){
-      const agr=(cxDir==='golden'&&rN>=60)||(cxDir==='death'&&rN<=40),dis=(cxDir==='golden'&&rN<=40)||(cxDir==='death'&&rN>=60);
-      rc=agr?'rup':(dis?'rdn':'');
-      if(cxDir==='golden'&&rN>=60&&(tf==='15m'||tf==='30m'||tf==='45m'||tf==='1h'))rw='<span class="rsiwarn" title="golden cross arriving overbought on a 15m&ndash;1h chart &mdash; trend may run but the entry is stretched (Finding 3, measured on 15m&ndash;1h only)">&#9888;</span>';
-    }
-    const rsiCell='RSI <b'+(rc?' class="'+rc+'"':'')+'>'+(stat.rsi||'&mdash;')+'</b>'+rw;
+    const cxDir=isBF?'golden':(isEF?'death':st),rq=rsiCue(tf,cxDir,stat.rsi);
+    const rsiCell='RSI <b'+(rq.rc?' class="'+rq.rc+'"':'')+'>'+(stat.rsi||'&mdash;')+'</b>'+rq.rw;
     const statsLine=st?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; '+rsiCell+' &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
     return '<div class="srow '+rowcls+'"><div class="stf">'+tf.toUpperCase()+'</div><div class="sbar"></div>'+
       '<div class="smid"><div class="sstatus">'+statusHtml+pend+'</div><div class="sstats">'+statsLine+'</div></div>'+
@@ -292,10 +300,11 @@ function render(){
     const a=analyze(tf,bars);rows.push(a.row);all.push(...a.crosses);tfX[tf]=a.crosses;
   }
   renderCascade(tfX,rows);
-  document.getElementById('ladder').innerHTML=rows.map(r=>r.state==='n/a'?'':
-    '<tr><td><b>'+r.tf+'</b></td><td class="'+r.state+'">'+r.state.toUpperCase()+'</td>'+
+  document.getElementById('ladder').innerHTML=rows.map(r=>{if(r.state==='n/a')return '';
+    const rq=rsiCue(r.tf,r.state,r.rsi);
+    return '<tr><td><b>'+r.tf+'</b></td><td class="'+r.state+'">'+r.state.toUpperCase()+'</td>'+
     '<td class="'+cls(r.gap)+'">'+r.gap+'</td><td class="'+cls(r.slope)+'">'+r.slope+'</td>'+
-    '<td>'+r.rsi+'</td><td>'+r.volx+'</td><td>'+(r.since?r.since.bars+' ('+r.since.type+')':'&mdash;')+'</td></tr>').join('');
+    '<td class="'+rq.rc+'">'+r.rsi+rq.rw+'</td><td>'+r.volx+'</td><td>'+(r.since?r.since.bars+' ('+r.since.type+')':'&mdash;')+'</td></tr>';}).join('');
   all.sort((a,b)=>b.t-a.t);
   document.getElementById('feed').innerHTML=all.slice(0,20).map(e=>
     '<div>'+fmtT(e.t)+'  <b class="'+e.type+'">'+e.tf+' '+e.type.toUpperCase()+'</b> @ $'+Number(e.price).toLocaleString()+
