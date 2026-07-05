@@ -236,7 +236,11 @@ function renderCascade(tfX,rows){
     return {dir:c.dir,frontier:c.frontier,fulc,open,fo,proj,byTf,nextUp:fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null};
   };
   const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open');
-  const bullC=cs.find(c=>c.dir==='golden'&&aliveOpen(c)),bearC=cs.find(c=>c.dir==='death'&&aliveOpen(c));
+  // Pick the MOST-ADVANCED live cascade in each direction: highest frontier on the ladder =
+  // closest to the high-value big-chart cross (4h/daily for bull, 2h-4h for bear). A fresh 5m
+  // origin must NOT hijack the fulcrum down to 10m while a mature cascade sits up at the 2h/3h.
+  const pick=dir=>cs.filter(c=>c.dir===dir&&aliveOpen(c)).sort((a,b)=>(CHAIN.indexOf(b.frontier)-CHAIN.indexOf(a.frontier))||(b.origin.t-a.origin.t))[0]||null;
+  const bullC=pick('golden'),bearC=pick('death');
   const bull=cinfo(bullC),bear=cinfo(bearC);
   const headLine=(inf,glyph,klass)=>{
     if(!inf)return '';
