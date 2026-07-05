@@ -50,6 +50,11 @@
   .sodds b{color:#c9a227}
   .scd{color:#c9a227}
   .srow.fulcrum{background:rgba(201,162,39,.06);box-shadow:inset 3px 0 0 #c9a227}
+  .srow.fulcrum-bull{background:rgba(63,191,111,.08);box-shadow:inset 3px 0 0 #3fbf6f}
+  .srow.fulcrum-bull .stf{color:#3fbf6f}
+  .srow.fulcrum-bear{background:rgba(224,86,79,.08);box-shadow:inset 3px 0 0 #e0564f}
+  .srow.fulcrum-bear .stf{color:#e0564f}
+  .shead-op .up{color:#3fbf6f}.shead-op .down{color:#e0564f}
   .spay{display:inline-block;font-size:9px;letter-spacing:.5px;padding:1px 5px;border:1px solid #2a2a20;color:#6f6a5a;margin-left:6px;border-radius:2px;vertical-align:middle}
   .spay.on{border-color:#c9a227;color:#c9a227}
   .spend{display:inline-block;font-size:9px;letter-spacing:.5px;color:#c9a227;font-weight:600;margin-left:6px;vertical-align:middle}
@@ -202,54 +207,68 @@ function renderCascade(tfX,rows){
   const el=document.getElementById('casc');
   const cs=buildCascades(tfX,cur);
   if(!cs.length){el.innerHTML='<div class="sub">no 5m cascade origin detected in loaded history</div>';return}
-  const c=cs[0],dir=c.dir;
-  const openRung=c.rungs.find(r=>r.status==='open');
-  const fulc=openRung?openRung.tf:null;
-  const nextUp=fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null;
-  const fo=fwdPath(c.frontier,dir);
-  // projected must-reach-by deadlines: each forward gate's window opens (worst case)
-  // when the prior rung hits its own deadline, so they stack cumulatively.
-  const proj={};
-  if(openRung){let d=openRung.deadline;proj[fulc]=d;const fi=CHAIN.indexOf(fulc);for(let j=fi+1;j<CHAIN.length;j++){d+=(WIN_H[CHAIN[j]]||0)*3600;proj[CHAIN[j]]=d}}
-  const topDl=proj['4h'];
-  const glyph=dir==='golden'?'&#9650; LADDER &middot; UPSIDE':'&#9875; ANCHOR &middot; DOWNSIDE';
-  const stW=c.state==='completed'?'CASCADE COMPLETED &mdash; REACHED THE 4H CHART':
-    c.state==='invalidated'?'CASCADE FAILED &mdash; THE '+c.frontier.toUpperCase()+' FRONTIER FLIPPED BACK':
-    'CASCADE ALIVE &mdash; FRONTIER '+c.frontier.toUpperCase()+(fulc?', FULCRUM AT '+fulc.toUpperCase():'');
-  const headHtml='<span class="'+(dir==='golden'?'up':'down')+'">'+glyph+'</span> &nbsp;'+stW;
-  const opHtml=(openRung&&topDl!=null)?'<div class="shead-op">FULL CASCADE &rarr; 4H: <b>~'+(fo['4h']!=null?fo['4h']:'?')+'%</b> &middot; overall opportunity window <span class="cd scd" data-dl="'+Math.round(topDl)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span></div>':'';
-  // vertical spine: slow charts on top, fast on the bottom; the cascade climbs (ladder) or drags (anchor) up it
+  // Two live fulcrums can coexist: a maturing cascade high on the ladder AND a fresh
+  // counter-cascade restarting on the fast charts. Track the most-recent still-alive
+  // cascade (open gate, frontier holding) in EACH direction.
+  const cinfo=c=>{
+    if(!c)return null;
+    const open=c.rungs.find(r=>r.status==='open'),fulc=open?open.tf:null,fo=fwdPath(c.frontier,c.dir),proj={};
+    if(open){let d=open.deadline;proj[fulc]=d;const fi=CHAIN.indexOf(fulc);for(let j=fi+1;j<CHAIN.length;j++){d+=(WIN_H[CHAIN[j]]||0)*3600;proj[CHAIN[j]]=d}}
+    const byTf={};c.rungs.forEach(r=>byTf[r.tf]=r);
+    return {dir:c.dir,frontier:c.frontier,fulc,open,fo,proj,byTf,nextUp:fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null};
+  };
+  const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open');
+  const bullC=cs.find(c=>c.dir==='golden'&&aliveOpen(c)),bearC=cs.find(c=>c.dir==='death'&&aliveOpen(c));
+  const bull=cinfo(bullC),bear=cinfo(bearC);
+  const headLine=(inf,glyph,klass)=>{
+    if(!inf)return '';
+    const fwd=inf.fulc?gd(inf.fulc,inf.dir).fwd:null;
+    const cd=inf.open?' &middot; <span class="cd scd" data-dl="'+Math.round(inf.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>':'';
+    return '<div class="shead-op"><span class="'+klass+'">'+glyph+'</span> frontier <b>'+inf.frontier.toUpperCase()+'</b> &middot; fulcrum <b>'+(inf.fulc?inf.fulc.toUpperCase():'&mdash;')+'</b>'+(inf.nextUp?'&rarr;'+inf.nextUp.toUpperCase():'')+(fwd!=null?' (~'+fwd+'% fwd)':'')+' &middot; full&rarr;4H ~'+(inf.fo['4h']!=null?inf.fo['4h']:'?')+'%'+cd+'</div>';
+  };
+  // collapse to a single fulcrum (or none) when only one direction is live / all charts align
+  const scored=['5m','10m','15m','30m','45m','1h','2h','3h','4h'];
+  const allG=scored.every(tf=>S[tf]&&S[tf].state==='golden'),allD=scored.every(tf=>S[tf]&&S[tf].state==='death');
+  let headHtml;
+  if(bull&&bear)headHtml='<span class="up">&#9650; BULL</span> &amp; <span class="down">&#9660; BEAR</span> &mdash; DUAL CASCADE, TWO FULCRUMS';
+  else if(bull)headHtml='<span class="up">&#9650; LADDER &middot; UPSIDE</span> &mdash; SINGLE FULCRUM AT '+(bull.fulc?bull.fulc.toUpperCase():'&mdash;');
+  else if(bear)headHtml='<span class="down">&#9875; ANCHOR &middot; DOWNSIDE</span> &mdash; SINGLE FULCRUM AT '+(bear.fulc?bear.fulc.toUpperCase():'&mdash;');
+  else if(allG)headHtml='<span class="up">&#9650; FULLY ALIGNED &middot; UPSIDE</span> &mdash; every chart golden, no open gate';
+  else if(allD)headHtml='<span class="down">&#9875; FULLY ALIGNED &middot; DOWNSIDE</span> &mdash; every chart death, no open gate';
+  else headHtml='CASCADE TRACKER &mdash; no open gate';
+  const opHtml=(bull?headLine(bull,'&#9650; BULL','up'):'')+(bear?headLine(bear,'&#9875; BEAR','down'):'');
   const SPINE=['1d','4h','3h','2h','1h','45m','30m','15m','10m','5m','1m'];
   const spineRows=SPINE.map(tf=>{
-    const ci=CHAIN.indexOf(tf),r=ci>=0?c.rungs[ci]:null,g=gd(tf,dir),stat=S[tf]||{};
-    let rowcls='',statusHtml='',cd='';
-    if(tf==='1m'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; TRIPWIRE';cd='flips first &middot; no anchor'}
-    else if(tf==='1d'){rowcls=(stat.state||'')+' dim';statusHtml='<b class="dirc">'+(stat.state?stat.state.toUpperCase():'&mdash;')+'</b> &middot; THE WALL';cd='daily regime gate'}
-    else if(r&&r.status==='hit'){rowcls=dir;statusHtml=tf==='5m'?'<b class="dirc">ORIGIN</b> &middot; '+(dir==='golden'?'golden':'death')+' cross':'<b class="dirc">'+(dir==='golden'?'FLIPPED UP':'FLIPPED DOWN')+'</b>';cd=fmtT(r.t)+' UTC'}
-    else if(r&&r.status==='aligned'){rowcls=dir;statusHtml='<b class="dirc">ALIGNED</b>';cd='in-state on arrival'}
-    else if(r&&r.status==='open'){rowcls=dir+' fulcrum';statusHtml='<b style="color:#c9a227">&#9670; FULCRUM</b> &middot; needs a '+(dir==='golden'?'golden':'death')+' cross'+(nextUp?' &rarr; '+nextUp.toUpperCase():'');cd='<span class="cd scd" data-dl="'+Math.round(r.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
-    else if(r&&r.status==='timedout'){rowcls='dim';statusHtml='WINDOW CLOSED';cd='the '+(WIN_H[tf]||0)+'h window elapsed'}
-    else if(r&&r.status==='failed'){rowcls='dim';statusHtml='GATE FAILED';cd='frontier flipped '+fmtT(r.diedAt)}
-    else{rowcls=(stat.state||'')+' dim';statusHtml='<b>~'+(fo[tf]!=null?fo[tf]:'?')+'%</b> forward'+(g&&g.n<15?' &middot; thin':'');cd=proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
-    const pend=stat.pending===dir?'<span class="spend">&#9679; CROSS PENDING</span>':'';
-    let pay='';
-    if(tf==='2h'||tf==='3h'||tf==='4h')pay='<span class="spay'+(dir==='death'?' on':'')+'">bear-pay</span>';
-    else if(tf==='1d')pay='<span class="spay'+(dir==='golden'?' on':'')+'">bull-pay</span>';
-    const statsLine=stat.state?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; RSI <b>'+stat.rsi+'</b> &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
-    const oddsHtml=g?'<span class="sodds">FWD <b>'+g.fwd+'%</b> &middot; state '+g.state+'%'+(g.n<15?' &middot; n='+g.n:'')+'</span><br>':'';
+    const stat=S[tf]||{},st=stat.state;
+    const isBF=bull&&tf===bull.fulc,isEF=bear&&tf===bear.fulc;
+    const bR=bull?bull.byTf[tf]:null,eR=bear?bear.byTf[tf]:null;
+    const bMem=bR&&(bR.status==='hit'||bR.status==='aligned')&&st==='golden';
+    const eMem=eR&&(eR.status==='hit'||eR.status==='aligned')&&st==='death';
+    let rowcls=(st==='golden'||st==='death')?st:'',statusHtml='',cd='',oddsHtml='';
+    if(tf==='1m'){rowcls+=' dim';statusHtml='<b class="dirc">'+(st?st.toUpperCase():'&mdash;')+'</b> &middot; TRIPWIRE';cd='flips first &middot; no anchor'}
+    else if(tf==='1d'){rowcls+=' dim';statusHtml='<b class="dirc">'+(st?st.toUpperCase():'&mdash;')+'</b> &middot; THE WALL';cd='daily regime gate'}
+    else if(isBF){const gg=gd(tf,'golden');rowcls+=' fulcrum-bull';statusHtml='<b style="color:#3fbf6f">&#9650;&#9670; BULL FULCRUM</b> &middot; needs a golden cross'+(bull.nextUp?' &rarr; '+bull.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#3fbf6f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bull.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
+    else if(isEF){const gg=gd(tf,'death');rowcls+=' fulcrum-bear';statusHtml='<b style="color:#e0564f">&#9875;&#9670; BEAR FULCRUM</b> &middot; needs a death cross'+(bear.nextUp?' &rarr; '+bear.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#e0564f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bear.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
+    else if(bMem){statusHtml='<b class="dirc">'+(tf==='5m'&&bR.status==='hit'?'BULL ORIGIN':(tf===bull.frontier?'BULL FRONTIER &#9650;':'&#9650; golden'))+'</b>';cd=bR.status==='hit'?fmtT(bR.t)+' UTC':'aligned on arrival'}
+    else if(eMem){statusHtml='<b class="dirc">'+(tf==='5m'&&eR.status==='hit'?'BEAR ORIGIN':(tf===bear.frontier?'BEAR FRONTIER &#9875;':'&#9875; death'))+'</b>';cd=eR.status==='hit'?fmtT(eR.t)+' UTC':'aligned on arrival'}
+    else if(bull&&bull.fo[tf]!=null&&!bR&&st!=='golden'){const gg=gd(tf,'golden');statusHtml='<b style="color:#3fbf6f">~'+bull.fo[tf]+'%</b> bull-forward'+(gg&&gg.n<15?' &middot; thin':'');oddsHtml=gg?'<span class="sodds">FWD '+gg.fwd+'% &middot; state '+gg.state+'%</span><br>':'';cd=bull.proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(bull.proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
+    else if(bear&&bear.fo[tf]!=null&&!eR&&st!=='death'){const gg=gd(tf,'death');statusHtml='<b style="color:#e0564f">~'+bear.fo[tf]+'%</b> bear-forward'+(gg&&gg.n<15?' &middot; thin':'');oddsHtml=gg?'<span class="sodds">FWD '+gg.fwd+'% &middot; state '+gg.state+'%</span><br>':'';cd=bear.proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(bear.proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
+    else{statusHtml='<b class="dirc">'+(st?st.toUpperCase():'&mdash;')+'</b>'}
+    let pend='';
+    if(stat.pending==='golden')pend='<span class="spend" style="color:#3fbf6f">&#9679; GOLDEN PENDING</span>';
+    else if(stat.pending==='death')pend='<span class="spend" style="color:#e0564f">&#9679; DEATH PENDING</span>';
+    const statsLine=st?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; RSI <b>'+stat.rsi+'</b> &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
     return '<div class="srow '+rowcls+'"><div class="stf">'+tf.toUpperCase()+'</div><div class="sbar"></div>'+
-      '<div class="smid"><div class="sstatus">'+statusHtml+pend+pay+'</div><div class="sstats">'+statsLine+'</div></div>'+
+      '<div class="smid"><div class="sstatus">'+statusHtml+pend+'</div><div class="sstats">'+statsLine+'</div></div>'+
       '<div class="sright">'+oddsHtml+'<span class="scd">'+cd+'</span></div></div>';
   }).join('');
-  const fg=fulc?gd(fulc,dir):null;
-  const fulcNote=fulc?'<b style="color:#c9a227">&#9670; FULCRUM: '+fulc.toUpperCase()+'</b> &mdash; a '+(dir==='golden'?'golden':'death')+' cross here advances the cascade'+(nextUp?' to contest the '+nextUp.toUpperCase():'')+(fg?' &mdash; <b>~'+fg.fwd+'% chance it propagates</b> within the '+(WIN_H[fulc]||0)+'h window (backdrop state ~'+fg.state+'%'+(fg.n<15?', thin n='+fg.n:'')+'). ':'. '):(c.state==='completed'?'Reached the top of the ladder. ':c.state==='invalidated'?'No open gate &mdash; the cascade broke. ':'');
-  const model='<b>FWD&percnt;</b> = measured chance the cross actually MOVES FORWARD to that chart within its window, before the frontier flips back &mdash; forward rungs compound these (each gate an independent draw, Finding&nbsp;1). <b>STATE&percnt;</b> = whether the chart is merely same-direction (aligned or crosses) &mdash; backdrop, not propagation. Fast charts sit at the bottom; the cascade climbs (&#9650; ladder) or drags (&#9875; anchor) up the same spine. The <b>bear-pay / bull-pay</b> tags mark where each direction historically pays (Finding&nbsp;6). The 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). A gold <b style="color:#c9a227">&#9679; CROSS PENDING</b> row has already reclaimed both its 50 &amp; 200 SMAs in the cascade&rsquo;s direction but the scored cross hasn&rsquo;t printed yet &mdash; leading pressure on that gate. Gates at 2h+ rest on n=7&ndash;30 &mdash; indicative only.';
-  const hist=cs.slice(1,9).map(x=>{
+  const model='Two cascades can run at once on one ladder &mdash; a <span style="color:#3fbf6f">&#9650; BULL</span> climbing from below and a <span style="color:#e0564f">&#9875; BEAR</span> dragging up from the fast charts &mdash; so the tracker shows a <b>fulcrum for each</b>: the next gate that direction must cross to advance, with its <b>FWD&percnt;</b> (measured chance it propagates within the window, Finding&nbsp;1) and a live countdown. Bars are coloured by each chart&rsquo;s current 50/200 state; a <b>&#9679; PENDING</b> tag means price has reclaimed both SMAs but the cross hasn&rsquo;t printed yet. Forward rungs above a fulcrum compound that direction&rsquo;s odds; the 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30. Bear moves pay on 2h&ndash;4h, bull moves on the daily (Finding&nbsp;6).';
+  const hist=cs.filter(x=>x!==bullC&&x!==bearC).slice(0,8).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
-    return '<div>'+fmtT(x.origin.t)+'  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
+    return '<div>'+fmtT(x.origin.t)+' UTC  <b class="'+x.origin.type+'">'+(x.origin.type==='golden'?'UP':'DOWN')+'</b>  '+path+tail+'</div>';
   }).join('');
-  el.innerHTML='<div class="casc"><div class="casc-head">'+headHtml+'</div>'+opHtml+'<div class="spine">'+spineRows+'</div><div class="casc-cap" style="margin-top:10px">'+fulcNote+model+'</div></div>'+
+  el.innerHTML='<div class="casc"><div class="casc-head">'+headHtml+'</div>'+opHtml+'<div class="spine">'+spineRows+'</div><div class="casc-cap" style="margin-top:10px">'+model+'</div></div>'+
     (hist?'<h2>RECENT CASCADE ATTEMPTS</h2><div class="casc-hist">'+hist+'</div>':'');
   tickCds();
 }
