@@ -46,6 +46,9 @@
   .srow.golden .dirc{color:#3fbf6f}.srow.death .dirc{color:#e0564f}
   .sstats{font-size:10px;color:#6f6a5a;margin-top:2px}
   .sstats b{color:#9a927e;font-weight:600}
+  .sstats b.rup{color:#3fbf6f}
+  .sstats b.rdn{color:#e0564f}
+  .rsiwarn{color:#e8944a;font-weight:700;margin-left:1px;cursor:help}
   .sright{text-align:right;white-space:nowrap;font-size:10px;color:#6f6a5a;line-height:1.5}
   .sodds b{color:#c9a227}
   .scd{color:#c9a227}
@@ -257,12 +260,22 @@ function renderCascade(tfX,rows){
     let pend='';
     if(stat.pending==='golden')pend='<span class="spend" style="color:#3fbf6f">&#9679; GOLDEN PENDING</span>';
     else if(stat.pending==='death')pend='<span class="spend" style="color:#e0564f">&#9679; DEATH PENDING</span>';
-    const statsLine=st?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; RSI <b>'+stat.rsi+'</b> &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
+    // RSI cue: green when it agrees with the cross (Finding 2, trend runs longer),
+    // red when it disagrees; a golden cross with RSI>=60 also gets a stretched-entry warning (Finding 3).
+    const cxDir=isBF?'golden':(isEF?'death':st),rN=parseFloat(stat.rsi);
+    let rc='',rw='';
+    if(!isNaN(rN)&&(cxDir==='golden'||cxDir==='death')){
+      const agr=(cxDir==='golden'&&rN>=60)||(cxDir==='death'&&rN<=40),dis=(cxDir==='golden'&&rN<=40)||(cxDir==='death'&&rN>=60);
+      rc=agr?'rup':(dis?'rdn':'');
+      if(cxDir==='golden'&&rN>=60)rw='<span class="rsiwarn" title="golden cross arriving overbought &mdash; trend may run but the entry is stretched (Finding 3)">&#9888;</span>';
+    }
+    const rsiCell='RSI <b'+(rc?' class="'+rc+'"':'')+'>'+(stat.rsi||'&mdash;')+'</b>'+rw;
+    const statsLine=st?'gap <b>'+stat.gap+'%</b> &middot; 50-slope <b>'+stat.slope+'%</b> &middot; '+rsiCell+' &middot; vol <b>'+stat.volx+'&times;</b>'+(stat.since?' &middot; <b>'+stat.since.bars+'</b> bars since '+stat.since.type:''):'insufficient history';
     return '<div class="srow '+rowcls+'"><div class="stf">'+tf.toUpperCase()+'</div><div class="sbar"></div>'+
       '<div class="smid"><div class="sstatus">'+statusHtml+pend+'</div><div class="sstats">'+statsLine+'</div></div>'+
       '<div class="sright">'+oddsHtml+'<span class="scd">'+cd+'</span></div></div>';
   }).join('');
-  const model='Two cascades can run at once on one ladder &mdash; a <span style="color:#3fbf6f">&#9650; BULL</span> climbing from below and a <span style="color:#e0564f">&#9875; BEAR</span> dragging up from the fast charts &mdash; so the tracker shows a <b>fulcrum for each</b>: the next gate that direction must cross to advance, with its <b>FWD&percnt;</b> (measured chance it propagates within the window, Finding&nbsp;1) and a live countdown. Bars are coloured by each chart&rsquo;s current 50/200 state; a <b>&#9679; PENDING</b> tag means price has reclaimed both SMAs but the cross hasn&rsquo;t printed yet. Forward rungs above a fulcrum compound that direction&rsquo;s odds; the 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30. Bear moves pay on 2h&ndash;4h, bull moves on the daily (Finding&nbsp;6).';
+  const model='Two cascades can run at once on one ladder &mdash; a <span style="color:#3fbf6f">&#9650; BULL</span> climbing from below and a <span style="color:#e0564f">&#9875; BEAR</span> dragging up from the fast charts &mdash; so the tracker shows a <b>fulcrum for each</b>: the next gate that direction must cross to advance, with its <b>FWD&percnt;</b> (measured chance it propagates within the window, Finding&nbsp;1) and a live countdown. Bars are coloured by each chart&rsquo;s current 50/200 state; a <b>&#9679; PENDING</b> tag means price has reclaimed both SMAs but the cross hasn&rsquo;t printed yet. Forward rungs above a fulcrum compound that direction&rsquo;s odds; the 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30. Bear moves pay on 2h&ndash;4h, bull moves on the daily (Finding&nbsp;6). <b>RSI</b> turns <span style="color:#3fbf6f">green when it agrees with the cross</span> (&ge;60 golden / &le;40 death &mdash; trend runs longer, Finding&nbsp;2) and <span style="color:#e0564f">red when it disagrees</span>; a <span style="color:#e8944a">&#9888;</span> flags a golden cross arriving overbought (Finding&nbsp;3 &mdash; the trend may run but the entry is stretched).';
   const hist=cs.filter(x=>x!==bullC&&x!==bearC).slice(0,8).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
