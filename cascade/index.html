@@ -228,25 +228,30 @@ function renderCascade(tfX,rows){
   // Two live fulcrums can coexist: a maturing cascade high on the ladder AND a fresh
   // counter-cascade restarting on the fast charts. Track the most-recent still-alive
   // cascade (open gate, frontier holding) in EACH direction.
+  const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open');
+  // "support" = contiguous same-direction charts CURRENTLY backing the frontier (counting down
+  // from just below the fulcrum until a chart breaks direction). A fulcrum is only meaningful with
+  // a real linked run beneath it (>=3); one or two charts is noise.
+  const supportOf=c=>{const open=c.rungs.find(r=>r.status==='open');if(!open)return 0;let n=0;for(let j=CHAIN.indexOf(open.tf)-1;j>=0;j--){if(S[CHAIN[j]]&&S[CHAIN[j]].state===c.dir)n++;else break}return n};
   const cinfo=c=>{
     if(!c)return null;
     const open=c.rungs.find(r=>r.status==='open'),fulc=open?open.tf:null,fo=fwdPath(c.frontier,c.dir),proj={};
     if(open){let d=open.deadline;proj[fulc]=d;const fi=CHAIN.indexOf(fulc);for(let j=fi+1;j<CHAIN.length;j++){d+=(WIN_H[CHAIN[j]]||0)*3600;proj[CHAIN[j]]=d}}
     const byTf={};c.rungs.forEach(r=>byTf[r.tf]=r);
-    return {dir:c.dir,frontier:c.frontier,fulc,open,fo,proj,byTf,nextUp:fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null};
+    return {dir:c.dir,frontier:c.frontier,fulc,open,fo,proj,byTf,nextUp:fulc?(CHAIN[CHAIN.indexOf(fulc)+1]||null):null,support:supportOf(c)};
   };
-  const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open');
-  // Pick the MOST-ADVANCED live cascade in each direction: highest frontier on the ladder =
-  // closest to the high-value big-chart cross (4h/daily for bull, 2h-4h for bear). A fresh 5m
-  // origin must NOT hijack the fulcrum down to 10m while a mature cascade sits up at the 2h/3h.
-  const pick=dir=>cs.filter(c=>c.dir===dir&&aliveOpen(c)).sort((a,b)=>(CHAIN.indexOf(b.frontier)-CHAIN.indexOf(a.frontier))||(b.origin.t-a.origin.t))[0]||null;
+  // Pick the MOST-ADVANCED live cascade (highest frontier = closest to the high-value big-chart
+  // cross), but PREFER ones with real support (>=3 linked charts) so a thin/whipsawed high frontier
+  // doesn't outrank a well-backed one; fall back to highest frontier if none are supported.
+  const byFront=(a,b)=>(CHAIN.indexOf(b.frontier)-CHAIN.indexOf(a.frontier))||(b.origin.t-a.origin.t);
+  const pick=dir=>{const live=cs.filter(c=>c.dir===dir&&aliveOpen(c));const sup=live.filter(c=>supportOf(c)>=3).sort(byFront);return sup[0]||live.sort(byFront)[0]||null};
   const bullC=pick('golden'),bearC=pick('death');
   const bull=cinfo(bullC),bear=cinfo(bearC);
   const headLine=(inf,glyph,klass)=>{
     if(!inf)return '';
     const fwd=inf.fulc?gd(inf.fulc,inf.dir).fwd:null;
     const cd=inf.open?' &middot; <span class="cd scd" data-dl="'+Math.round(inf.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>':'';
-    return '<div class="shead-op"><span class="'+klass+'">'+glyph+'</span> frontier <b>'+inf.frontier.toUpperCase()+'</b> &middot; fulcrum <b>'+(inf.fulc?inf.fulc.toUpperCase():'&mdash;')+'</b>'+(inf.nextUp?'&rarr;'+inf.nextUp.toUpperCase():'')+(fwd!=null?' (~'+fwd+'% fwd)':'')+' &middot; full&rarr;4H ~'+(inf.fo['4h']!=null?inf.fo['4h']:'?')+'%'+cd+'</div>';
+    return '<div class="shead-op"><span class="'+klass+'">'+glyph+'</span> frontier <b>'+inf.frontier.toUpperCase()+'</b> &middot; fulcrum <b>'+(inf.fulc?inf.fulc.toUpperCase():'&mdash;')+'</b>'+(inf.nextUp?'&rarr;'+inf.nextUp.toUpperCase():'')+(fwd!=null?' (~'+fwd+'% fwd)':'')+' &middot; <b>'+inf.support+' linked</b>'+(inf.support<3?' <span style="color:#e8944a">weak</span>':'')+' &middot; full&rarr;4H ~'+(inf.fo['4h']!=null?inf.fo['4h']:'?')+'%'+cd+'</div>';
   };
   // collapse to a single fulcrum (or none) when only one direction is live / all charts align
   const scored=['5m','10m','15m','30m','45m','1h','2h','3h','4h'];
@@ -269,8 +274,8 @@ function renderCascade(tfX,rows){
     let rowcls=(st==='golden'||st==='death')?st:'',statusHtml='',cd='',oddsHtml='';
     if(tf==='1m'){rowcls+=' dim';statusHtml='<b class="dirc">'+(st?st.toUpperCase():'&mdash;')+'</b> &middot; TRIPWIRE';cd='flips first &middot; no anchor'}
     else if(tf==='1d'){rowcls+=' dim';statusHtml='<b class="dirc">'+(st?st.toUpperCase():'&mdash;')+'</b> &middot; THE WALL';cd='daily regime gate'}
-    else if(isBF){const gg=gd(tf,'golden');rowcls+=' fulcrum-bull';statusHtml='<b style="color:#3fbf6f">&#9650;&#9670; BULL FULCRUM</b> &middot; needs a golden cross'+(bull.nextUp?' &rarr; '+bull.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#3fbf6f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bull.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
-    else if(isEF){const gg=gd(tf,'death');rowcls+=' fulcrum-bear';statusHtml='<b style="color:#e0564f">&#9875;&#9670; BEAR FULCRUM</b> &middot; needs a death cross'+(bear.nextUp?' &rarr; '+bear.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#e0564f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bear.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
+    else if(isBF){const gg=gd(tf,'golden'),wk=bull.support<3;rowcls+=' fulcrum-bull';statusHtml='<b style="color:#3fbf6f">&#9650;'+(wk?'&#9671;':'&#9670;')+' BULL FULCRUM</b> &middot; <b>'+bull.support+' linked</b>'+(wk?' <span style="color:#e8944a">weak, needs 3+</span>':'')+' &middot; needs a golden cross'+(bull.nextUp?' &rarr; '+bull.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#3fbf6f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bull.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
+    else if(isEF){const gg=gd(tf,'death'),wk=bear.support<3;rowcls+=' fulcrum-bear';statusHtml='<b style="color:#e0564f">&#9875;'+(wk?'&#9671;':'&#9670;')+' BEAR FULCRUM</b> &middot; <b>'+bear.support+' linked</b>'+(wk?' <span style="color:#e8944a">weak, needs 3+</span>':'')+' &middot; needs a death cross'+(bear.nextUp?' &rarr; '+bear.nextUp.toUpperCase():'');oddsHtml='<span class="sodds">FWD <b style="color:#e0564f">'+gg.fwd+'%</b> &middot; state '+gg.state+'%'+(gg.n<15?' &middot; n='+gg.n:'')+'</span><br>';cd='<span class="cd scd" data-dl="'+Math.round(bear.open.deadline)+'" data-lbl="closes in" data-exp="window closed">&hellip;</span>'}
     else if(bMem){statusHtml='<b class="dirc">'+(tf==='5m'&&bR.status==='hit'?'BULL ORIGIN':(tf===bull.frontier?'BULL FRONTIER &#9650;':'&#9650; golden'))+'</b>';cd=bR.status==='hit'?fmtT(bR.t)+' UTC':'aligned on arrival'}
     else if(eMem){statusHtml='<b class="dirc">'+(tf==='5m'&&eR.status==='hit'?'BEAR ORIGIN':(tf===bear.frontier?'BEAR FRONTIER &#9875;':'&#9875; death'))+'</b>';cd=eR.status==='hit'?fmtT(eR.t)+' UTC':'aligned on arrival'}
     else if(bull&&bull.fo[tf]!=null&&!bR&&st!=='golden'){const gg=gd(tf,'golden');statusHtml='<b style="color:#3fbf6f">~'+bull.fo[tf]+'%</b> bull-forward'+(gg&&gg.n<15?' &middot; thin':'');oddsHtml=gg?'<span class="sodds">FWD '+gg.fwd+'% &middot; state '+gg.state+'%</span><br>':'';cd=bull.proj[tf]!=null?'<span class="cd scd" data-dl="'+Math.round(bull.proj[tf])+'" data-lbl="reach-by" data-exp="window past">&hellip;</span>':''}
@@ -288,7 +293,7 @@ function renderCascade(tfX,rows){
       '<div class="smid"><div class="sstatus">'+statusHtml+pend+'</div><div class="sstats">'+statsLine+'</div></div>'+
       '<div class="sright">'+oddsHtml+'<span class="scd">'+cd+'</span></div></div>';
   }).join('');
-  const model='Two cascades can run at once on one ladder &mdash; a <span style="color:#3fbf6f">&#9650; BULL</span> climbing from below and a <span style="color:#e0564f">&#9875; BEAR</span> dragging up from the fast charts &mdash; so the tracker shows a <b>fulcrum for each</b>: the next gate that direction must cross to advance, with its <b>FWD&percnt;</b> (measured chance it propagates within the window, Finding&nbsp;1) and a live countdown. Bars are coloured by each chart&rsquo;s current 50/200 state; a <b>&#9679; PENDING</b> tag means price has reclaimed both SMAs but the cross hasn&rsquo;t printed yet. Forward rungs above a fulcrum compound that direction&rsquo;s odds; the 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30. Bear moves pay on 2h&ndash;4h, bull moves on the daily (Finding&nbsp;6). <b>RSI</b> turns <span style="color:#3fbf6f">green when it agrees with the cross</span> (&ge;60 golden / &le;40 death &mdash; trend runs longer, Finding&nbsp;2) and <span style="color:#e0564f">red when it disagrees</span>; a <span style="color:#e8944a">&#9888;</span> flags a golden cross arriving overbought on the <b>15m&ndash;1h</b> charts, where it was measured (Finding&nbsp;3 &mdash; the trend may run but the entry is stretched).';
+  const model='Two cascades can run at once on one ladder &mdash; a <span style="color:#3fbf6f">&#9650; BULL</span> climbing from below and a <span style="color:#e0564f">&#9875; BEAR</span> dragging up from the fast charts &mdash; so the tracker shows a <b>fulcrum for each</b>: the next gate that direction must cross to advance, with its <b>FWD&percnt;</b> (measured chance it propagates within the window, Finding&nbsp;1) and a live countdown. Bars are coloured by each chart&rsquo;s current 50/200 state; a <b>&#9679; PENDING</b> tag means price has reclaimed both SMAs but the cross hasn&rsquo;t printed yet. A fulcrum is only meaningful with a real run beneath it, so each shows its <b>linked</b> count (contiguous same-direction charts backing the frontier); fewer than <b>3</b> is flagged <span style="color:#e8944a">weak</span> (hollow &#9671;). Forward rungs above a fulcrum compound that direction&rsquo;s odds; the 1h&rarr;2h gate is the bottleneck (fwd '+GATE_ODDS['2h'].u.fwd+'&percnt; up / '+GATE_ODDS['2h'].d.fwd+'&percnt; down). Gates at 2h+ rest on n=7&ndash;30. Bear moves pay on 2h&ndash;4h, bull moves on the daily (Finding&nbsp;6). <b>RSI</b> turns <span style="color:#3fbf6f">green when it agrees with the cross</span> (&ge;60 golden / &le;40 death &mdash; trend runs longer, Finding&nbsp;2) and <span style="color:#e0564f">red when it disagrees</span>; a <span style="color:#e8944a">&#9888;</span> flags a golden cross arriving overbought on the <b>15m&ndash;1h</b> charts, where it was measured (Finding&nbsp;3 &mdash; the trend may run but the entry is stretched).';
   const hist=cs.filter(x=>x!==bullC&&x!==bearC).slice(0,8).map(x=>{
     const path=x.rungs.filter(r=>r.status==='hit'||r.status==='aligned').map(r=>r.tf).join('&rarr;');
     const tail=x.state==='completed'?' &#10003; completed to 4h':x.state==='invalidated'?' &#10007; frontier '+x.frontier+' flipped back':' &hellip; alive at the '+x.frontier+' frontier';
