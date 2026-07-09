@@ -331,7 +331,7 @@ function render(){
     '<text x="2" y="10" fill="#6f6a5a" font-size="9">'+mx.toLocaleString()+'</text><text x="2" y="68" fill="#6f6a5a" font-size="9">'+mn.toLocaleString()+'</text>'}
   for(const e of all){
     const k=e.tf+e.t;
-    if(loaded&&!known.has(k)&&Date.now()/1000-e.t<3600&&Notification.permission==='granted')
+    if(loaded&&!known.has(k)&&Date.now()/1000-e.t<3600&&typeof Notification!=='undefined'&&Notification.permission==='granted')
       new Notification('BTC Cascade',{body:e.tf+' '+e.type.toUpperCase()+' cross @ $'+Number(e.price).toLocaleString()});
     known.add(k);
   }
@@ -348,10 +348,11 @@ async function refresh(){
     render();document.getElementById('err').textContent='';
   }catch(e){document.getElementById('err').textContent='refresh error: '+e}
 }
-function askNotify(){Notification.requestPermission().then(p=>{document.getElementById('alerts').textContent=p==='granted'?'ALERTS ON':'ENABLE ALERTS'})}
+function askNotify(){if(typeof Notification==='undefined')return;Notification.requestPermission().then(p=>{document.getElementById('alerts').textContent=p==='granted'?'ALERTS ON':'ENABLE ALERTS'})}
 (async()=>{
   try{
-    if(Notification.permission==='granted')document.getElementById('alerts').textContent='ALERTS ON';
+    if(typeof Notification==='undefined')document.getElementById('alerts').style.display='none';
+    else if(Notification.permission==='granted')document.getElementById('alerts').textContent='ALERTS ON';
     for(const tf in GRAN)store[tf]=await fetchCandles(GRAN[tf],NEED[tf]);
     render();ticker();
     setInterval(refresh,60000);setInterval(ticker,15000);setInterval(tickCds,1000);
