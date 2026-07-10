@@ -228,14 +228,7 @@ function renderCascade(tfX,rows){
   // Two live fulcrums can coexist: a maturing cascade high on the ladder AND a fresh
   // counter-cascade restarting on the fast charts. Track the most-recent still-alive
   // cascade (open gate, frontier holding) in EACH direction.
-  // A cascade's frontier holding its direction is what keeps it alive (GATE SEMANTICS) — but a
-  // PENDING marker on the frontier itself means price has already reclaimed both SMAs the other
-  // way, i.e. the frontier has functionally lost its status even though the 50/200 cross hasn't
-  // printed yet. User call (2026-07-10): once that happens the cascade shouldn't be shown as a
-  // live fulcrum on either the frontier or the next gate — better to show no fulcrum for that
-  // direction than one whose own foundation is dissolving underneath it.
-  const frontierPending=c=>{const st=S[c.frontier];return !!(st&&st.pending)};
-  const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open')&&!frontierPending(c);
+  const aliveOpen=c=>c.state!=='invalidated'&&c.rungs.some(r=>r.status==='open');
   // "support" = contiguous same-direction charts CURRENTLY backing the frontier (counting down
   // from just below the fulcrum until a chart breaks direction). A fulcrum is only meaningful with
   // a real linked run beneath it (>=3); one or two charts is noise.
@@ -262,7 +255,7 @@ function renderCascade(tfX,rows){
   // the ladder (4h turns golden, page says 45m bull fulcrum). While the 4h still holds the
   // direction, the completed cascade IS the story: it outranks any partial restart.
   const pick=dir=>{
-    const comp=cs.filter(c=>c.dir===dir&&c.state==='completed'&&S['4h']&&S['4h'].state===dir&&!frontierPending(c)).sort((a,b)=>b.origin.t-a.origin.t)[0];
+    const comp=cs.filter(c=>c.dir===dir&&c.state==='completed'&&S['4h']&&S['4h'].state===dir).sort((a,b)=>b.origin.t-a.origin.t)[0];
     if(comp)return comp;
     const live=cs.filter(c=>c.dir===dir&&aliveOpen(c));const sup=live.filter(c=>supportOf(c)>=2).sort(byFront);return sup[0]||live.sort(byFront)[0]||null;
   };
