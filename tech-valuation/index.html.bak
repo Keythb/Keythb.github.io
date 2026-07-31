@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TON618 Capital — Tech Valuation</title>
+<meta name="description" content="TON618 Capital tech-equity valuation reports — valuations of the companies shaping the digital-asset and AI economy.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --obsidian:#0B0B0C;--onyx:#16161A;--graphite:#26262B;--ash:#3A3A40;
+  --gold:#C9A24B;--champagne:#E6D2A2;--antique:#8A6D2B;
+  --ivory:#F6F3EC;--warm:#9A958A;
+  --serif:"EB Garamond",Georgia,"Times New Roman",serif;
+  --sans:"Inter","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--obsidian);color:var(--ivory);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"lnum" 1;}
+a{color:var(--champagne);text-decoration:none;}
+a:hover{color:var(--gold);}
+.wrap{max-width:1080px;margin:0 auto;padding:0 48px;}
+.rule{border:0;height:1px;background:var(--gold);opacity:.85;margin:0;}
+.rule--faint{background:var(--ash);opacity:1;}
+header.site{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.82);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--ash);}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:14px 48px;max-width:1080px;margin:0 auto;}
+.brand{display:inline-flex;align-items:center;gap:.5em;font-family:var(--serif);}
+.brand .icon{height:1.85em;width:1.85em;flex:none;display:block;object-fit:cover;border-radius:4px;}
+.brand .name{font-size:1.32rem;font-weight:600;letter-spacing:-.01em;color:var(--ivory);white-space:nowrap;}
+.brand .name .six18{color:var(--gold);}
+.brand .name .cap{font-weight:400;}
+.menu{display:flex;align-items:center;gap:1.6rem;}
+.menu a{color:var(--warm);border:0;text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:500;}
+.menu a:hover,.menu a[aria-current]{color:var(--gold);}
+.menu a.cta{color:var(--obsidian);background:var(--gold);padding:.5rem .85rem;letter-spacing:.08em;}
+.menu a.cta:hover{background:var(--champagne);}
+.page-head{padding:72px 0 46px;}
+.eyebrow{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);display:block;margin-bottom:1rem;}
+h1{font-family:var(--serif);font-weight:600;font-size:2.9rem;line-height:1.08;letter-spacing:-.015em;margin:0 0 1rem;}
+.lede{font-family:var(--serif);font-size:1.26rem;line-height:1.5;color:#D9D3C6;max-width:40em;margin:0;}
+section{padding:8px 0 30px;}
+.card{display:block;background:var(--onyx);border:1px solid var(--ash);border-left:3px solid var(--gold);padding:1.4rem 1.6rem;margin:1.2rem 0;transition:border-color .15s;}
+.card:hover{border-left-color:var(--champagne);}
+.card .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--warm);}
+.card h2{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:.35rem 0 .45rem;line-height:1.2;}
+.card h2 a{color:var(--ivory);border:0;}
+.card h2 a:hover{color:var(--gold);}
+.card p{margin:.3rem 0 .7rem;font-size:.96rem;color:#C7C1B4;max-width:54em;}
+.card .links{font-size:.82rem;}
+.card .links a{color:var(--gold);border:0;}
+.card .links a:hover{color:var(--champagne);}
+.card .links .sep{color:var(--ash);margin:0 .6rem;}
+.verdict{display:inline-block;font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--obsidian);background:var(--champagne);padding:.2rem .55rem;margin-left:.55rem;vertical-align:middle;}
+.note{margin-top:2rem;font-size:.86rem;color:var(--warm);border-left:2px solid var(--ash);padding-left:1rem;max-width:52em;line-height:1.6;}
+footer.site{border-top:1px solid var(--ash);padding:2.4rem 0 3rem;margin-top:30px;}
+.disc{font-size:.72rem;color:var(--warm);line-height:1.6;max-width:62em;}
+.disc-head{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--warm);margin:0 0 .7rem;}
+.disc p{margin:0 0 .55rem;}
+.disc strong{color:#B8B2A4;font-weight:600;}
+.disc em{font-style:italic;}
+.disc a{color:var(--warm);border-bottom:1px solid var(--ash);}
+.disc a:hover{color:var(--gold);}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:1.6rem;font-size:.74rem;color:var(--warm);}
+.foot-row a{color:var(--warm);border:0;}
+.foot-row a:hover{color:var(--gold);}
+@media (max-width:820px){
+  .wrap,.nav{padding-left:24px;padding-right:24px;}
+  .menu{gap:1rem;}
+  h1{font-size:2.2rem;}
+  .page-head{padding:48px 0 32px;}
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav class="nav">
+    <a class="brand" href="/home/" aria-label="TON618 Capital home">
+      <picture><source srcset="/assets/ton618-icon.webp" type="image/webp"><img class="icon" src="/assets/ton618-icon.png" alt="TON618 Capital" width="280" height="280"></picture>
+      <span class="name">TON<span class="six18">618</span> <span class="cap">Capital</span></span>
+    </a>
+    <span class="menu">
+      <a href="/ton618-research/">Research</a>
+      <a href="/tech-valuation/" aria-current="page">Tech Valuation</a>
+      <a class="cta" href="mailto:research@ton618capital.com">Contact</a>
+    </span>
+  </nav>
+</header>
+
+<div class="page-head">
+  <div class="wrap">
+    <span class="eyebrow">Equity Research · Technology</span>
+    <h1>Tech-equity valuation reports.</h1>
+    <p class="lede">Valuations of the companies shaping the digital-asset and AI economy — built from primary filings, with the model attached.</p>
+  </div>
+</div>
+<hr class="rule">
+
+<section>
+  <div class="wrap">
+    <div class="card">
+      <span class="k">Equity Valuation · Addendum · 31 July 2026</span>
+      <h2><a href="/ton618-research/mstr-q2-2026/">Strategy (MSTR) — Q2 2026: The Drain, Made Visible</a><span class="verdict">FV &#8776;$93 vs $91</span></h2>
+      <p>Our <a href="/tech-valuation/mstr/">June valuation</a> called the risk a slow funding drain, not a liquidation. Q2 ran it in real time: the dollar reserve fell to half a year of coverage, bitcoin was sold at a $203M realized loss to fund a preferred dividend, and STRC broke to $70. Eight of our own claims scorecarded &mdash; one of them wrong &mdash; plus two claims from the call that do not survive scrutiny.</p>
+      <span class="links"><a href="/ton618-research/mstr-q2-2026/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/mstr-q2-2026/TON618_MSTR-Q2-2026_Addendum.pdf">PDF</a><span class="sep">·</span><a href="/tech-valuation/mstr/">The original valuation →</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · Addendum · 30 July 2026</span>
+      <h2><a href="/ton618-research/coin-q226-addendum/">Coinbase (COIN) — Q2 2026: The Scissors Open Wider</a><span class="verdict">FV &#8776;$102 unchanged</span></h2>
+      <p>Record market share, record USDC, a new $100M product line &mdash; against a revenue miss, a third straight GAAP loss, and a worse July. Trigger check on our <a href="/ton618-research/coin-valuation/">July valuation</a>: nothing tripped; fair value holds at &#8776;$102 vs ~$155.</p>
+      <span class="links"><a href="/ton618-research/coin-q226-addendum/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/coin-q226-addendum/TON618_COIN-Q226-Addendum_Research_Note.pdf">PDF</a><span class="sep">·</span><a href="/ton618-research/coin-valuation/">The original valuation →</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 24 July 2026</span>
+      <h2><a href="/ton618-research/googl-valuation/">Alphabet (GOOGL) — The Convention Price</a><span class="verdict">FV &#8776;$256 vs $318</span></h2>
+      <p>Alphabet trades at a reported 17&times; earnings. Strip out the $99.0bn securities gain and the clean multiple is 33&times;. Capex now exceeds operating cash flow. The distance from our fair value to the market's price is not a disagreement about the business &mdash; it is three accounting conventions.</p>
+      <span class="links"><a href="/ton618-research/googl-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/googl-valuation/TON618_GOOGL-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 24 July 2026</span>
+      <h2><a href="/ton618-research/tsla-valuation/">Tesla (TSLA) — Four Times the Finish Line</a><span class="verdict">FV $69&ndash;$91 vs $320</span></h2>
+      <p>Eighty-six percent of Tesla's $1,088bn enterprise value is the price of robotaxi and Optimus. That price embeds roughly four times the company's own board-set milestone of one million robotaxis &mdash; at one-seventh the valuation the award attaches to it. Unsupervised vehicles counted today: about 21.</p>
+      <span class="links"><a href="/ton618-research/tsla-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/tsla-valuation/TON618_TSLA-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 22 July 2026</span>
+      <h2><a href="/ton618-research/gev-valuation/">GE Vernova (GEV) — The Sold-Out Decade</a><span class="verdict">FV &#8776;$672 vs $985</span></h2>
+      <p>The purest winner of the AI power buildout beat Q2 and raised guidance &mdash; and fell 8.7% anyway, because at ~25&times; its own 2028 target the good news was already paid for. Backlog $176bn, turbines sold out to 2030. The multiple, not the business, is the risk.</p>
+      <span class="links"><a href="/ton618-research/gev-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/gev-valuation/TON618_GE-Vernova-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 21 July 2026</span>
+      <h2><a href="/ton618-research/nvda-valuation/">NVIDIA (NVDA) — Priced for the Clock Not Breaking</a><span class="verdict">FV &#8776;$163 vs $203</span></h2>
+      <p>The best business in the AI complex, at a price that already assumes the buildout never plateaus. A reverse-DCF says $203 requires ~$1tn of revenue by FY2031 &mdash; and NVIDIA's revenue is, by identity, other companies' capex. Great business, full price.</p>
+      <span class="links"><a href="/ton618-research/nvda-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/nvda-valuation/TON618_NVIDIA-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 18 July 2026</span>
+      <h2><a href="/ton618-research/oracle-valuation/">Oracle (ORCL) — The Round Trip</a><span class="verdict">FV &#8776;$114 vs $124</span></h2>
+      <p>A 64% fall took Oracle from pricing its nameplate AI backlog to pricing our base case. The legacy software annuity is worth ~$72 a share alone; at $124 the market pays ~$52 for an AI bet whose defining margin Oracle will not disclose &mdash; full value for an outcome that must go right.</p>
+      <span class="links"><a href="/ton618-research/oracle-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/oracle-valuation/TON618_Oracle-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 18 July 2026</span>
+      <h2><a href="/ton618-research/coreweave-valuation/">CoreWeave (CRWV) — The Thin Floor</a><span class="verdict">FV &#8776;$60 vs $73</span></h2>
+      <p>The neocloud thesis in one security. Revenue more contracted than its peers' &mdash; take-or-pay, prepaid, Microsoft-anchored &mdash; but the signed book covers a seventh of the price, and the rest is a levered option on how long a GPU stays useful, behind $25B of debt.</p>
+      <span class="links"><a href="/ton618-research/coreweave-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/coreweave-valuation/TON618_CoreWeave-Valuation_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 13 July 2026</span>
+      <h2><a href="/ton618-research/hood-valuation/">Robinhood (HOOD) — Retail-Platform Valuation</a><span class="verdict">FV &#8776;$87 vs $110</span></h2>
+      <p>The price is a growth commitment. Robinhood broke its crypto dependency mid-winter &mdash; crypto revenue halved while total revenue grew &mdash; but at &#8776;62&times; normalized earnings, $110 banks a 20%-a-year compounding machine for four uninterrupted years, with its fastest-growing line awaiting a Supreme Court petition.</p>
+      <span class="links"><a href="/ton618-research/hood-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/hood-valuation/TON618_HOOD-Valuation_Research_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 13 July 2026</span>
+      <h2><a href="/ton618-research/xyz-valuation/">Block (XYZ) — Fintech-Platform Valuation</a><span class="verdict">FV &#8776;$83 vs $79</span></h2>
+      <p>The most misread name in crypto. Reported revenue overstates the business (a third is low-margin bitcoin pass-through) and a tripled loss line is mostly accounting timing, not a credit blow-up &mdash; underneath sits a mid-teens gross-profit compounder priced at roughly fair value, conditional on one credit signal.</p>
+      <span class="links"><a href="/ton618-research/xyz-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/xyz-valuation/TON618_XYZ-Block-Valuation_Research_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 6 July 2026 · addendum 13 Jul</span>
+      <h2><a href="/ton618-research/crcl-valuation/">Circle (CRCL) — Stablecoin-Issuer Valuation</a><span class="verdict">FV &#8776;$50 vs $63</span></h2>
+      <p>The price of distribution. Circle earns the interest on $73B of USDC &mdash; then pays nearly two-thirds of it away to the partners who distribute it. A July OCC national trust-bank charter widens the moat but leaves that split &mdash; the reason it screens rich &mdash; untouched; fair value holds at &#8776;$50.</p>
+      <span class="links"><a href="/ton618-research/crcl-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/crcl-valuation/TON618_CRCL-Valuation_Research_Note.pdf">PDF</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 5 July 2026 · addendum 30 Jul</span>
+      <h2><a href="/ton618-research/coin-valuation/">Coinbase (COIN) — Crypto-Exchange Valuation</a><span class="verdict">FV &#8776;$102 vs $165</span></h2>
+      <p>The right company at the wrong price. Coinbase is two businesses &mdash; a hyper-cyclical trading franchise and a quietly compounding &ldquo;financial plumbing&rdquo; annuity &mdash; and at today&rsquo;s price the market pays a peak year as if it were permanent, returning less than simply holding bitcoin in every scenario.</p>
+      <span class="links"><a href="/ton618-research/coin-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/coin-valuation/TON618_COIN-Valuation_Research_Note.pdf">PDF</a><span class="sep">·</span><a href="/ton618-research/coin-q226-addendum/">Q2'26 addendum →</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Equity Valuation · 28 June 2026</span>
+      <h2><a href="/ton618-research/mstr-valuation/">Strategy (MSTR) — Bitcoin-Treasury Valuation</a><span class="verdict">&#8776; Fair value</span></h2>
+      <p>What are you really buying? After a brutal de-rating the famous NAV premium is gone &mdash; MSTR trades at ~1.0&times; net asset value, no longer the &ldquo;$2.50 for $1 of bitcoin&rdquo; the bears shorted. What&rsquo;s left is a ~1.7&times; levered, convex bet on bitcoin carrying a permanent preferred coupon.</p>
+      <span class="links"><a href="/ton618-research/mstr-valuation/">Read the note →</a><span class="sep">·</span><a href="/ton618-research/mstr-valuation/TON618_MSTR-Valuation_Research_Note.pdf">PDF</a><span class="sep">·</span><a href="/ton618-research/mstr-valuation/TON618_MSTR_Valuation_Model.xlsx">Valuation model (XLSX)</a></span>
+    </div>
+
+    <div class="card">
+      <span class="k">Initiating Coverage · 12 June 2026</span>
+      <h2><a href="/ton618-research-SPCX-20260612/">SPCX (SpaceX) — Tech-Equity Valuation</a><span class="verdict">Avoid at IPO</span></h2>
+      <p>Priced for Mars: the $1.77 trillion listing embeds the bull case, and then some. A full valuation built from the S-1/A puts fair value at $66 against a $135 offer — a structurally rich entry that leaves no margin of safety for execution risk on Starship or Starlink.</p>
+      <span class="links"><a href="/ton618-research-SPCX-20260612/">Read the note →</a><span class="sep">·</span><a href="/ton618-research-SPCX-20260612/TON618_SPCX_Tech-Equity-Valuation.pdf">PDF</a><span class="sep">·</span><a href="/ton618-research-SPCX-20260612/TON618_SPCX_Valuation_Model.xlsx">Valuation model (XLSX)</a></span>
+    </div>
+
+    <p class="note">Coverage is initiated selectively, where a primary-filing-driven valuation adds something the sell-side consensus misses. New reports are added here as they publish. For broader thematic and empirical work, see the <a href="/ton618-research/">research library</a>.</p>
+  </div>
+</section>
+<hr class="rule">
+
+<footer class="site">
+  <div class="wrap">
+    <div class="disc">
+      <p class="disc-head">Important Disclosures</p>
+      <p><strong>Information only.</strong> TON618 Capital. This site and all research on it are for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument. Valuations reflect the author&rsquo;s estimates and assumptions and may differ materially from realized outcomes.</p>
+      <p><strong>Publisher&rsquo;s exclusion.</strong> All research is published solely as general, impersonal information of regular circulation. It is not tailored to the objectives or circumstances of any individual and is not issued in connection with compensation from any client. The Fund has no clients and distributes all research free of charge. On that basis it publishes in reliance on the publisher&rsquo;s exclusion from the definition of &ldquo;investment adviser&rdquo; under the Investment Advisers Act of 1940 (&sect;202(a)(11)(D); cf. <em>Lowe v. SEC</em>, 472 U.S. 181 (1985)).</p>
+      <p><strong>Registration &amp; conflicts.</strong> TON618 Capital is not registered as an investment adviser or broker-dealer in any capacity. The Fund is a Bitcoin fund and may hold or transact in the securities or digital assets it discusses; material conflicts are disclosed where they exist. The Fund receives no compensation from any party in connection with its research.</p>
+      <p><strong>Use of AI.</strong> Artificial intelligence is used in the creation of this research. All methodology and data integrity are reviewed and approved before publication by TON618 Capital&rsquo;s Chief Investment Officer, <strong>Keyth Beck</strong>; errors may nonetheless occur, and readers should verify independently.</p>
+      <p><strong>CFA.</strong> TON618 Capital research is prepared to align with CFA Institute analytical standards (methodology only). CFA&reg; and Chartered Financial Analyst&reg; are registered trademarks owned by CFA Institute. That reference describes the analytical framework applied; it does <strong>not</strong> imply the research was prepared, reviewed, or authored by a CFA charterholder, and it is <strong>not</strong> issued, reviewed, endorsed, certified, or approved by &mdash; nor affiliated with &mdash; CFA Institute.</p>
+      <p><strong>Risk &amp; feedback.</strong> Past performance is not indicative of future results. Digital assets and equities are volatile and may result in total loss of capital. Corrections and feedback are welcome &mdash; please direct them to CIO <strong>Keyth Beck</strong> at <a href="mailto:keyth@ton618capital.com">keyth@ton618capital.com</a>.</p>
+    </div>
+    <div class="foot-row">
+      <span>© 2026 TON618 Capital</span>
+      <span><a href="https://x.com/ton618capital" target="_blank" rel="noopener">@ton618capital</a> &nbsp;·&nbsp; <a href="/home/">Home</a> &nbsp;·&nbsp; <a href="/ton618-research/">Research</a> &nbsp;·&nbsp; <a href="mailto:research@ton618capital.com">Contact</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e524da4723a44930b7efc229692eb513"}'></script>
+<!-- End Cloudflare Web Analytics -->
+</body>
+</html>
