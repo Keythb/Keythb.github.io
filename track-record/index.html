@@ -54,9 +54,9 @@ th{text-align:left;color:var(--gold);font-size:.7rem;letter-spacing:.1em;
 th.n,td.n{text-align:right;}
 td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;}
 td.dt{color:var(--warm);white-space:nowrap;}
-td.nm{min-width:14rem;max-width:26rem;}
+td.nm{min-width:12rem;max-width:24rem;}
 td.n{font-variant-numeric:tabular-nums;white-space:nowrap;}
-td.st{white-space:nowrap;color:var(--warm);font-size:.74rem;letter-spacing:.06em;}
+td.st{white-space:nowrap;color:var(--warm);font-size:.74rem;letter-spacing:.06em;padding-right:0;}
 .tk{display:inline-block;margin-left:8px;border:1px solid var(--ash);padding:1px 6px;
   font-size:.68rem;color:var(--warm);letter-spacing:.06em;}
 .pos{color:var(--jade);} .neg{color:var(--oxblood);} .muted{color:var(--warm);}
@@ -105,8 +105,6 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
     <div class="method">
       <p><b>What is on this page.</b> Every equity fair-value call published in the research library, logged on the day the note went out and never edited afterwards, plus every claim a later note has already scored. 16 calls and 11 graded claims.</p>
       <p><b>Nothing here has resolved yet.</b> Valuation calls are logged at 60, 120 and 250 trading sessions, so the earliest one does not mature until approximately September 2026. Until a call reaches its horizon it is marked to market and labelled OPEN &mdash; that is a running position, not a result, and it is shown that way deliberately. No call has reached its horizon yet.</p>
-      <p><b>What is deliberately absent.</b> The fund runs a separate signal ledger of quantitative leaves scored by rank information coefficient. Those are not on this page: they are neither legible nor verifiable to a reader. What belongs in public is the subset anyone can check &mdash; a published note, a published date, a published price. Rows are ordered by date, never by performance.</p>
-      <p><b>Prices.</b> Marks are last prices from Schwab Market Data, pulled 02 Aug 2026, 11:41 local. 15 of 15 tickers quoted.</p>
     </div>
   </div>
 </section>
@@ -114,13 +112,13 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
 <section>
   <div class="wrap">
     <h2>Open fair-value calls</h2>
-    <p class="note">&ldquo;Called&rdquo; is the return to fair value the note implied on its publication date. &ldquo;Since call&rdquo; is what the stock has actually done since. &ldquo;To FV now&rdquo; is the distance still left. &ldquo;Closed&rdquo; is how much of the called distance the market has travelled &mdash; above 100% means it has gone past us.</p>
+    <p class="note">Marks as of 02 Aug 2026, 11:47. &ldquo;Called&rdquo; is the return to fair value the note implied on its publication date. &ldquo;Since call&rdquo; is what the stock has actually done since. &ldquo;To FV now&rdquo; is the distance still left. &ldquo;Closed&rdquo; is how much of the called distance the market has travelled &mdash; above 100% means it has gone past us.</p>
     <div class="scroll">
     <table>
       <thead><tr>
         <th>Published</th><th>Note</th><th class="n">Fair value</th><th class="n">Price at call</th>
         <th class="n">Called</th><th class="n">Price now</th><th class="n">Since call</th>
-        <th class="n">To FV now</th><th class="n">Closed</th><th>Status</th>
+        <th class="n">To FV now</th><th class="n">Closed</th><th>Resolves</th>
       </tr></thead>
       <tbody>
       <tr id="call-mstr-q2-2026">
@@ -134,7 +132,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-0.5%</td>
         <td class="n">+1.2%</td>
         <td class="n muted">n/m</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-aapl-valuation">
         <td class="dt">31 Jul 2026</td>
@@ -147,7 +145,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-0.5%</td>
         <td class="n">-32.3%</td>
         <td class="n muted">2%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-amzn-valuation">
         <td class="dt">31 Jul 2026</td>
@@ -160,7 +158,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-0.4%</td>
         <td class="n">-47.5%</td>
         <td class="n muted">1%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-msft-valuation">
         <td class="dt">30 Jul 2026</td>
@@ -173,7 +171,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+2.4%</td>
         <td class="n">-12.7%</td>
         <td class="n muted">-22%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-meta-valuation">
         <td class="dt">30 Jul 2026</td>
@@ -186,7 +184,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+2.8%</td>
         <td class="n">-33.2%</td>
         <td class="n muted">-9%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-tsla-valuation">
         <td class="dt">24 Jul 2026</td>
@@ -199,7 +197,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-3.3%</td>
         <td class="n">-70.6%</td>
         <td class="n muted">5%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-googl-valuation">
         <td class="dt">23 Jul 2026</td>
@@ -212,7 +210,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+11.5%</td>
         <td class="n">-27.6%</td>
         <td class="n muted">-60%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-gev-valuation">
         <td class="dt">22 Jul 2026</td>
@@ -225,7 +223,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+0.0%</td>
         <td class="n">-31.8%</td>
         <td class="n muted">0%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-nvda-valuation">
         <td class="dt">17 Jul 2026</td>
@@ -238,7 +236,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-1.9%</td>
         <td class="n">-18.1%</td>
         <td class="n muted">10%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-oracle-valuation">
         <td class="dt">16 Jul 2026</td>
@@ -251,7 +249,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+4.0%</td>
         <td class="n">-11.7%</td>
         <td class="n muted">-49%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-coreweave-valuation">
         <td class="dt">16 Jul 2026</td>
@@ -264,7 +262,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-2.2%</td>
         <td class="n">-15.8%</td>
         <td class="n muted">13%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-hood-valuation">
         <td class="dt">13 Jul 2026</td>
@@ -277,7 +275,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-21.5%</td>
         <td class="n">+0.9%</td>
         <td class="n muted">103%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-xyz-valuation">
         <td class="dt">13 Jul 2026</td>
@@ -290,7 +288,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+3.0%</td>
         <td class="n">+2.4%</td>
         <td class="n muted">55%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Oct 2026</span></td>
+        <td class="st">OPEN<span class="sub">Oct 2026</span></td>
       </tr>
       <tr id="call-coin-valuation">
         <td class="dt">05 Jul 2026</td>
@@ -303,7 +301,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-11.8%</td>
         <td class="n">-30.1%</td>
         <td class="n muted">31%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Sep 2026</span></td>
+        <td class="st">OPEN<span class="sub">Sep 2026</span></td>
       </tr>
       <tr id="call-crcl-valuation">
         <td class="dt">05 Jul 2026</td>
@@ -316,7 +314,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n neg">-4.7%</td>
         <td class="n">-18.8%</td>
         <td class="n muted">21%</td>
-        <td class="st">OPEN<span class="sub">resolves ~Sep 2026</span></td>
+        <td class="st">OPEN<span class="sub">Sep 2026</span></td>
       </tr>
       <tr id="call-mstr-valuation">
         <td class="dt">28 Jun 2026</td>
@@ -329,7 +327,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
         <td class="n pos">+12.8%</td>
         <td class="n">-7.4%</td>
         <td class="n muted">n/m</td>
-        <td class="st">OPEN<span class="sub">resolves ~Sep 2026</span></td>
+        <td class="st">OPEN<span class="sub">Sep 2026</span></td>
       </tr>
       </tbody>
     </table>
@@ -497,7 +495,7 @@ footer.site{border-top:1px solid var(--graphite);margin-top:40px;padding:34px 0 
       <p><strong>Use of AI.</strong> Artificial intelligence is used in the creation of this research. All methodology and data integrity are reviewed and approved before publication by TON618 Capital&rsquo;s Chief Investment Officer, <strong>Keyth Beck</strong>; errors may nonetheless occur, and readers should verify independently.</p>
       <p><strong>CFA.</strong> TON618 Capital research is prepared to align with CFA Institute analytical standards (methodology only). CFA&reg; and Chartered Financial Analyst&reg; are registered trademarks owned by CFA Institute. That reference describes the analytical framework applied; it does <strong>not</strong> imply the research was prepared, reviewed, or authored by a CFA charterholder, and it is <strong>not</strong> issued, reviewed, endorsed, certified, or approved by &mdash; nor does it imply any affiliation with &mdash; CFA Institute.</p>
       <p><strong>Risk.</strong> Past performance is not indicative of future results. Digital assets and equities are volatile and may result in total loss of capital. Questions and corrections are welcome &mdash; please direct them to CIO Keyth Beck at <a href="mailto:keyth@ton618capital.com">keyth@ton618capital.com</a>.</p>
-      <p>Sources: TON618 Capital signal ledger (<code>equity_valuation</code>), the research library, and Schwab Market Data for the marks. Generated 02 August 2026.</p>
+      <p>Generated 02 August 2026.</p>
     </div>
   </div>
 </footer>
