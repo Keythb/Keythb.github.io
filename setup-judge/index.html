@@ -47,6 +47,8 @@ th.num,td.num{text-align:right}
 .good{color:#3F8F6B;font-weight:600} .bad{color:#B0413E;font-weight:600}
 .open{color:#E6D2A2}
 .rk{color:#9A958A;width:170px} .rv{width:200px;white-space:nowrap}
+.wit{font-size:13px;padding:3px 0;color:#F6F3EC}
+.wit.bad{color:#B0413E;font-weight:600}
 .rs{color:#F6F3EC;font-size:13px}
 .cluster{margin:12px 0 0;display:flex;align-items:center}
 .dot{width:13px;height:13px;border-radius:50%;display:inline-block;margin-right:7px}
@@ -59,10 +61,10 @@ th.num,td.num{text-align:right}
 </style></head><body><div class="wrap">
 <div class="mast"><div><div class="eyebrow">SETUP JUDGE &middot; BTC &middot; INTERNAL</div>
 <div class="wordmark">TON<b>618</b> Capital</div></div>
-<div class="date">2026-08-04 &middot; built 12:44</div></div>
+<div class="date">2026-08-04 &middot; built 12:55</div></div>
 
-<div class="verdict"><span class="chip">CONFLICT</span>
-<p class="serif">The engine is short &mdash; T2 SHORT, conflicted — the bottom tells (weakening lows, miner capitulation) are stacked against this short. no adding, exits only: the capitulation cover and the stop.</p></div>
+<div class="verdict"><span class="chip">DECLINED</span>
+<p class="serif">The T2 SHORT trigger fired, but the witness panel scored it -1/5 with a veto (bottom cluster active (>=2 weakening lows, force never returned) — shorting into a forming bottom) &mdash; not compelling. The engine declines and waits.</p></div>
 
 <div class="grid"><div class="tile"><div class="eyebrow">THE LEG</div><div class="tileval">-4.6%</div><div class="sub">off the $66,516 grind top (2026-07-21); +8.4% above the $58,524 low (2026-06-30)</div></div><div class="tile"><div class="eyebrow">PRODUCERS</div><div class="tileval">-2.1%</div><div class="sub">miners capitulating 57d &mdash; recovery cross = the bottom signal to watch</div></div><div class="tile"><div class="eyebrow">OPPONENTS</div><div class="tileval">-0.11</div><div class="sub">liquidation balance &mdash; negative means more longs at risk below than shorts above</div></div><div class="tile"><div class="eyebrow">TABLE TALK</div><div class="tileval">1B / 1T</div><div class="sub">bottom-calls vs top-calls in yesterday's BTC media (unvalidated, color only)</div></div></div>
 
@@ -74,8 +76,16 @@ th.num,td.num{text-align:right}
  pays, judged from history alone: 5d <b>44%</b> &middot; 10d <b>59%</b> &middot; 20d <b>53%</b> (sessions ahead).</div></div>
 <div class="qa"><div class="q">What proves it wrong?</div><div class="a">A close above $69,041 (the rally resuming with force). The stop rises as price falls — it locks in gains.</div></div>
 <div class="qa"><div class="q">How does it end?</div><div class="a">Three ways: a panic-selling day (cover into it — that is where the profit has historically been), price climbing back above its long-term average, or the trailing stop.</div></div>
-<div class="qa"><div class="q">Size</div><div class="a"><b>Conflicted — the bottom tells (weakening lows, miner capitulation) are stacked against this short. No adding, exits only: the capitulation cover and the stop</b>
+<div class="qa"><div class="q">The witness panel (-1/5)</div><div class="a"><div class="wit">&#10007; force — the seller showed (p90 volume down-day)</div><div class="wit">&#10007; structure — the floor actually broke</div><div class="wit">&#10007; cluster — topside steam-loss (>=2 weakening highs)</div><div class="wit">&#10007; opponents — liquidation fuel skewed below (net <= -0.15)</div><div class="wit">&#10007; geometry — payoff >=1.5 and stop clear of the magnet path</div><div class="wit bad">VETO &mdash; bottom cluster active (>=2 weakening lows, force never returned) — shorting into a forming bottom</div><div class="wit">&#8854; opposing: producers capitulating >=30d (B2: price at/below production cost) (&minus;1)</div></div></div>
+<div class="qa"><div class="q">Verdict</div><div class="a"><b>Declined — the trigger fired but the witness panel refused it: not compelling enough to play. The frozen spec's paper position runs on its own exits; the engine adds nothing to it</b>
  &mdash; advisory only; this engine never places trades.</div></div></div>
+
+<h2>The waiting list</h2>
+<div class="sub">Acting is the exception. These are the pre-registered compelling
+points &mdash; the hands worth playing when they arrive, each with its trigger
+and distance. Until one fires with its witnesses, the engine folds and watches.</div>
+<table><thead><tr><th>Setup</th><th>Trigger</th><th class="num">Level</th>
+<th>Why it would be compelling</th></tr></thead><tbody><tr><td class="rk">Breakdown short — the Sep-22 analog</td><td>daily close below the floor WITH force (>=p90 volume)</td><td class="num">$58,524 <span class="sub2">(-7.8%)</span></td><td class="rs">structure-break + force + geometry (objective ~$49,979); without the force bar a floor break is a probe, not a hand</td></tr><tr><td class="rk">Confirm-B long — the bottom confirmed</td><td>5 consecutive daily closes above the 200d</td><td class="num">$70,965 <span class="sub2">(+11.8%)</span></td><td class="rs">progress 0/5; pairs with the magnet race (200d falling to meet price)</td></tr><tr><td class="rk">S2 producer-recovery long</td><td>hash ribbon 30d/60d recovery cross</td><td class="num">&mdash;</td><td class="rs">spread -2.1%, inverted 57d — the confirming event for the B2 cost-floor read</td></tr><tr><td class="rk">Capitulation — cover any short, long only in B1 context</td><td>a <=-4% day on >=p90 volume</td><td class="num">&mdash;</td><td class="rs">unconditional cover into seller exhaustion; time-critical (median +5% snapback next day)</td></tr></tbody></table>
 
 <h2>The picture</h2>
 <div class="sub">Last 220 sessions. Champagne = price; solid gray = 200-day average;
@@ -143,8 +153,8 @@ Brier measures whether the stated odds were honest (lower is better; 0.250 =
 guessing).</div>
 <table><thead><tr><th>Date</th><th>Hand</th><th>Call</th><th class="num">Horizon</th>
 <th class="num">Odds</th><th>Outcome</th><th class="num">Brier</th></tr></thead>
-<tbody><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">5d</td><td class="num">44%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-09</span></td><td class="num">&mdash;</td></tr><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">10d</td><td class="num">59%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-14</span></td><td class="num">&mdash;</td></tr><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">20d</td><td class="num">53%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-24</span></td><td class="num">&mdash;</td></tr></tbody></table>
-<div class="agg">1 day(s) judged &middot; 1 hand(s) played &middot; 3 calls logged &middot; 0 resolved</div>
+<tbody><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">5d</td><td class="num">44%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-09</span></td><td class="num">&mdash;</td></tr><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">10d</td><td class="num">59%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-14</span></td><td class="num">&mdash;</td></tr><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">20d</td><td class="num">53%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-24</span></td><td class="num">&mdash;</td></tr><tr><td>2026-08-04</td><td>T2_SHORT</td><td>down</td><td class="num">20d</td><td class="num">53%</td><td><span class="open">OPEN</span> <span class="sub2">matures 2026-08-24</span></td><td class="num">&mdash;</td></tr></tbody></table>
+<div class="agg">1 day(s) judged &middot; 2 hand(s) played &middot; 4 calls logged &middot; 0 resolved</div>
 
 <div class="foot">TON618 Capital &mdash; internal decision-support only. Descriptive
 base rates, never forecasts; no expected returns are stated or implied. This engine
