@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ton618capital.com/sitemap.xml
+Sitemap: https://ton618capital.com/ton618-research/sitemap.xml
