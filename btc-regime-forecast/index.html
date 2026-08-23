@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TON618 Capital — Markov Regime Forecaster</title>
+<meta name="robots" content="noindex">
+<title>TON618 Capital — BTC Regime Monitor</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600&family=Inter:wght@400;500;600;700&display=swap');
 :root{
@@ -15,34 +16,42 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--obsidian);color:var(--ivory);font-family:var(--sans);
-  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
-  font-feature-settings:"tnum" 1,"lnum" 1;}
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"lnum" 1;}
 .page{max-width:980px;margin:0 auto;padding:48px 40px 56px}
 .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--warmgray);margin:0 0 6px}
 .wordmark{color:var(--gold)}
 h1{font-family:var(--serif);font-weight:500;font-size:30px;letter-spacing:-.01em;line-height:1.15;margin:0 0 4px}
-.asof{font-size:12px;color:var(--warmgray);margin:0 0 0}
+.asof{font-size:12px;color:var(--warmgray);margin:0}
 .rule{height:1px;background:var(--gold);border:0;margin:24px 0;opacity:.9}
 .rule--faint{background:var(--ash);opacity:1}
-.hero{display:flex;gap:0;margin:6px 0 2px}
-.hero .cell{flex:1;padding:0 28px;border-left:1px solid var(--ash)}
-.hero .cell:first-child{padding-left:0;border-left:0}
-.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--warmgray);margin:0 0 6px}
-.big{font-family:var(--serif);font-size:44px;line-height:1;font-weight:500}
-.big.gold{color:var(--gold)}.big.ox{color:var(--oxblood)}.big.jade{color:var(--jade)}
-.sub{font-size:13px;color:var(--warmgray);margin-top:6px}
-.tag{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--champagne);border:1px solid var(--antique);padding:3px 10px;margin-top:10px}
 h2{font-family:var(--serif);font-weight:500;font-size:19px;margin:0 0 14px}
-.cols{display:flex;gap:48px}
-.col{flex:1;min-width:0}
+h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--warmgray);font-weight:600;margin:18px 0 8px}
+
+/* section bands — the whole point: NOW vs FORECAST must be unmistakable */
+.band{display:flex;align-items:baseline;gap:14px;margin:30px 0 14px;padding:10px 14px;border-left:3px solid var(--gold);background:var(--onyx)}
+.band .kind{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--gold);white-space:nowrap}
+.band .what{font-size:13px;color:var(--warmgray)}
+.band.now{border-left-color:var(--ivory)} .band.now .kind{color:var(--ivory)}
+.band.fwd{border-left-color:var(--gold)}
+.band.hist{border-left-color:var(--ash)} .band.hist .kind{color:var(--warmgray)}
+
+.hero{display:flex;gap:0;margin:6px 0 2px}
+.hero .cell{flex:1;padding:0 24px;border-left:1px solid var(--ash);min-width:0}
+.hero .cell:first-child{padding-left:0;border-left:0}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--warmgray);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+.big{font-family:var(--serif);font-size:40px;line-height:1;font-weight:500}
+.big.gold{color:var(--gold)}.big.ox{color:var(--oxblood)}.big.jade{color:var(--jade)}.big.gray{color:var(--warmgray)}
+.sub{font-size:13px;color:var(--warmgray);margin-top:6px}
+.tag{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--champagne);border:1px solid var(--antique);padding:3px 10px;margin-top:10px}
+.tag.ok{color:var(--jade);border-color:var(--jade)} .tag.warn{color:var(--oxblood);border-color:var(--oxblood)}
+
+.cols{display:flex;gap:48px}.col{flex:1;min-width:0}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warmgray);
-  font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--gold)}
+th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warmgray);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--gold)}
 td{padding:6px 8px;border-bottom:1px solid var(--graphite)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 td.muted{color:var(--warmgray)}
-.band{font-size:11px;color:var(--warmgray)}
+.bandtxt{font-size:11px;color:var(--warmgray)}
 .jade{color:var(--jade)}.oxblood{color:var(--oxblood)}.goldtxt{color:var(--gold)}
 .chartwrap{margin:8px 0 4px}
 .legend{font-size:12px;color:var(--warmgray);margin-top:6px}
@@ -50,42 +59,120 @@ td.muted{color:var(--warmgray)}
 .legend .sw:first-child{margin-left:0}
 .note{font-size:12.5px;color:var(--warmgray);margin-top:10px;line-height:1.55}
 .disclosure{font-size:11px;color:var(--warmgray);line-height:1.6;margin-top:8px}
-.confidential{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--antique);
-  text-align:center;margin-top:28px}
-.heat td{position:relative}
+.confidential{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--antique);text-align:center;margin-top:28px}
+
+/* posterior bar */
+.pbar{display:flex;height:10px;margin-top:10px;border:1px solid var(--obsidian);overflow:hidden}
+.pbar span{display:block;height:100%}
+.pkey{font-size:11px;color:var(--warmgray);margin-top:5px}
+
+/* info popups */
+.info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+  border:1px solid var(--antique);color:var(--champagne);font:600 10px/1 var(--sans);cursor:pointer;
+  background:transparent;padding:0;vertical-align:middle;flex:none}
+.info:hover,.info[aria-expanded="true"]{background:var(--antique);color:var(--obsidian)}
+.pop{display:none;position:absolute;z-index:20;max-width:340px;background:var(--onyx);color:var(--ivory);
+  border:1px solid var(--antique);padding:12px 14px;font-size:12.5px;line-height:1.5;text-transform:none;
+  letter-spacing:0;font-weight:400;box-shadow:0 8px 28px rgba(0,0,0,.6)}
+.pop.open{display:block}
+.pop b{color:var(--gold);font-weight:600}
+.pop .kind{display:inline-block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;padding:1px 6px;border:1px solid}
+.pop .kind.now{color:var(--ivory);border-color:var(--ivory)} .pop .kind.fwd{color:var(--gold);border-color:var(--gold)} .pop .kind.hist{color:var(--warmgray);border-color:var(--warmgray)}
+.hasinfo{position:relative}
+
+.glossary dt{font-weight:600;color:var(--champagne);margin-top:10px}
+.glossary dd{margin:2px 0 0;font-size:13px;color:var(--warmgray)}
 @media (max-width:760px){.cols{flex-direction:column;gap:28px}.hero{flex-wrap:wrap}
-  .hero .cell{flex:1 1 45%;border-left:0;padding:0 0 18px 0}}
+  .hero .cell{flex:1 1 45%;border-left:0;padding:0 0 18px 0}.band{flex-direction:column;gap:4px}}
 </style>
 </head>
 <body>
 <div class="page">
-  <p class="eyebrow"><span class="wordmark">TON618 CAPITAL</span>&nbsp;&nbsp;|&nbsp;&nbsp;Internal Research — Markov Regime Forecaster</p>
+  <p class="eyebrow"><span class="wordmark">TON618 CAPITAL</span>&nbsp;&nbsp;|&nbsp;&nbsp;Internal Research — BTC Regime Monitor</p>
   <h1 id="headline"></h1>
   <p class="asof" id="asof"></p>
-  <hr class="rule">
+  <p class="note" style="margin-top:10px">Two models, one page. <b style="color:var(--ivory)">Current State</b> tells you what regime today's data is in — nothing about tomorrow. <b style="color:var(--gold)">Forecast</b> gives the probability of each regime at 1–20 sessions ahead; it is a probability path, not a prediction. Click any <span class="info" style="cursor:default">i</span> for what a number means and how it is computed.</p>
+
+  <!-- ================= CURRENT STATE ================= -->
+  <div class="band now"><span class="kind">Current State</span><span class="what">Where the data is <em>today</em>. Descriptive — these numbers say nothing about what happens next.</span></div>
 
   <div class="hero">
-    <div class="cell">
-      <p class="label">Current Regime</p>
+    <div class="cell hasinfo">
+      <p class="label">Rolling-return regime
+        <button class="info" data-pop="p-roll">i</button>
+        <div class="pop" id="p-roll"><span class="kind now">Current state</span><br>
+          <b>Observed label.</b> BTC's simple return over the trailing <span class="win"></span> days, bucketed: above <span class="bt"></span> = Bull, below <span class="brt"></span> = Bear, between = Sideways. Fully mechanical — no fitting, no hidden state. This label is the input to the Forecast section below.</div>
+      </p>
       <div class="big" id="cur-regime"></div>
       <div class="sub" id="cur-sub"></div>
     </div>
-    <div class="cell">
-      <p class="label">Most Likely in 20 Sessions</p>
+    <div class="cell hasinfo">
+      <p class="label">HMM decoded state
+        <button class="info" data-pop="p-hmm">i</button>
+        <div class="pop" id="p-hmm"><span class="kind now">Current state</span><br>
+          <b>Hidden Markov Model.</b> A 3-state Gaussian HMM is fit on the last <span class="hdays"></span> days of daily log returns (Baum-Welch EM). Each state has its own mean and volatility; states are named Bear / Sideways / Bull by ascending fitted mean. The Viterbi path gives the most likely state today; the bar shows the filtered probability of each state. Unlike the rolling label, this reacts to the <em>distribution</em> of returns (drift and vol), so it can read Bear while the 20-day return is still positive — typically a choppy, high-vol market with negative drift.</div>
+      </p>
+      <div class="big" id="hmm-regime"></div>
+      <div class="sub" id="hmm-sub"></div>
+      <div class="pbar" id="hmm-bar"></div>
+      <div class="pkey" id="hmm-key"></div>
+    </div>
+    <div class="cell hasinfo">
+      <p class="label">Half-Kelly (HMM mixture)
+        <button class="info" data-pop="p-kelly">i</button>
+        <div class="pop" id="p-kelly"><span class="kind now">Current state</span><br>
+          <b>Sizing read, not a rule.</b> Continuous Kelly f* = μ/σ² using the posterior-weighted mean and variance across the HMM states today; shown at half-Kelly, floored at 0, capped at 2×. Risk-free assumed 0. A 1.0× means "fully invested"; 0 means the mixture drift is not positive. Cross-check against the Forecast edge below — they are independent reads.</div>
+      </p>
+      <div class="big" id="kelly-val"></div>
+      <div class="sub" id="kelly-sub"></div>
+    </div>
+  </div>
+  <div class="hasinfo" style="margin-top:16px">
+    <span class="tag" id="agree-tag"></span>
+    <button class="info" data-pop="p-agree" style="margin-left:6px">i</button>
+    <div class="pop" id="p-agree"><span class="kind now">Current state</span><br>
+      <b>Do the two nowcasts agree?</b> They measure different things. The rolling label is price level vs 20 days ago; the HMM is the return distribution over the last ~600 days. Disagreement is information: Bull label + Bear HMM usually means price is up but the path there was volatile with weak drift. Bear label + Bull HMM means a sharp drop inside an otherwise healthy return distribution.</div>
+  </div>
+
+  <!-- ================= FORECAST ================= -->
+  <div class="band fwd"><span class="kind">Forecast</span><span class="what">Probability of each regime 1–20 sessions ahead, <em>given today's rolling-return label</em>. A re-estimated model's probability path — not a price target, not a prediction.</span></div>
+
+  <div class="hero">
+    <div class="cell hasinfo">
+      <p class="label">Most likely in 20 sessions
+        <button class="info" data-pop="p-fwd">i</button>
+        <div class="pop" id="p-fwd"><span class="kind fwd">Forecast</span><br>
+          <b>Markov chain, 20 steps out.</b> Count every day-to-day regime transition across the full history (<span class="nclose"></span> closes) to build a 3×3 transition matrix P. Today's state is a one-hot vector; multiply by P twenty times (Chapman-Kolmogorov) to get the probability of each regime in 20 sessions. The model has no memory beyond today's label.</div>
+      </p>
       <div class="big gold" id="fwd-regime"></div>
       <div class="sub" id="fwd-sub"></div>
     </div>
-    <div class="cell">
-      <p class="label">Regime Edge vs Baseline</p>
+    <div class="cell hasinfo">
+      <p class="label">Regime edge vs baseline
+        <button class="info" data-pop="p-edge">i</button>
+        <div class="pop" id="p-edge"><span class="kind fwd">Forecast</span><br>
+          <b>A tilt, not a return.</b> Expected daily drift over the next 20 sessions conditioned on today's state, <em>minus</em> the drift under the long-run regime mix, annualized. Positive = today's state historically leads to better-than-average drift. Hand-off to the Kelly sizer as a directional cross-check; it is deliberately not an absolute μ.</div>
+      </p>
       <div class="big" id="edge-val"></div>
       <div class="sub">annualized · Kelly handoff</div>
       <span class="tag" id="edge-tag"></span>
     </div>
+    <div class="cell hasinfo">
+      <p class="label">Long-run mix
+        <button class="info" data-pop="p-stat">i</button>
+        <div class="pop" id="p-stat"><span class="kind fwd">Forecast</span><br>
+          <b>Where the forecast converges.</b> The stationary distribution of the transition matrix — the share of time spent in each regime if the chain ran forever. Every forecast decays toward this; the half-life of that decay is in Model Detail. It is the "no information" baseline the edge above is measured against.</div>
+      </p>
+      <div class="big gray" id="stat-val"></div>
+      <div class="sub" id="stat-sub"></div>
+    </div>
   </div>
 
-  <hr class="rule rule--faint">
-
-  <h2>Forward regime probability path</h2>
+  <h2 style="margin-top:26px" class="hasinfo">Forward regime probability path
+    <button class="info" data-pop="p-chart">i</button>
+    <div class="pop" id="p-chart"><span class="kind fwd">Forecast</span><br>
+      <b>How to read it.</b> At "now" the bar is 100% today's state. Moving right, mass leaks into the other regimes according to the transition matrix, and the stack converges on the dashed long-run mix at the right edge. The gold numbers at the top are P(Bull) at each marked horizon. Wide = uncertain; the chart does not show a price.</div>
+  </h2>
   <div class="chartwrap"><svg id="chart" viewBox="0 0 920 300" width="100%" preserveAspectRatio="xMidYMid meet"></svg></div>
   <p class="legend">P(regime) given today's state, by session ahead
     <span class="sw" style="background:var(--gold)"></span>Bull
@@ -93,55 +180,119 @@ td.muted{color:var(--warmgray)}
     <span class="sw" style="background:var(--oxblood)"></span>Bear
     <span style="margin-left:16px">— dashed: long-run mix</span></p>
 
-  <hr class="rule rule--faint">
+  <div class="cols" style="margin-top:22px">
+    <div class="col hasinfo">
+      <h2>Probability by horizon
+        <button class="info" data-pop="p-table">i</button>
+        <div class="pop" id="p-table"><span class="kind fwd">Forecast</span><br>
+          <b>Median and 90% band.</b> The transition matrix is estimated from finite counts, so it is uncertain. We draw 2,000 matrices from a Dirichlet posterior over each row, run each forward, and report the median with the 5th–95th percentile range. The band is <em>estimation</em> uncertainty only — it does not cover regime shifts or the model being wrong.</div>
+      </h2>
+      <table id="snap-table"><thead><tr><th>Horizon</th><th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="col hasinfo">
+      <h2>Transition matrix
+        <button class="info" data-pop="p-trans">i</button>
+        <div class="pop" id="p-trans"><span class="kind fwd">Forecast</span><br>
+          <b>The engine.</b> Row = today's regime, column = tomorrow's. Read "from Bull, 90% stay Bull tomorrow". Estimated on the full history and re-estimated every run. High diagonal = sticky regimes. The HMM has its own matrix in Model Detail; they are not the same object.</div>
+      </h2>
+      <table class="heat" id="trans-table"><thead><tr><th>from \ to</th><th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <!-- ================= MODEL DETAIL ================= -->
+  <div class="band hist"><span class="kind">Model Detail</span><span class="what">Fitted parameters, diagnostics and the historical backtest. Descriptive of the sample — none of this is a forecast.</span></div>
 
   <div class="cols">
-    <div class="col">
-      <h2>Probability by horizon</h2>
-      <table id="snap-table"><thead><tr><th>Horizon</th>
-        <th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead>
-        <tbody></tbody></table>
-      <p class="note" id="snap-note"></p>
+    <div class="col hasinfo">
+      <h2>HMM fitted states
+        <button class="info" data-pop="p-hstates">i</button>
+        <div class="pop" id="p-hstates"><span class="kind hist">Model detail</span><br>
+          <b>What each hidden state looks like.</b> Mean and volatility of daily log returns the HMM assigned to each state (annualized ×365 / ×√365), how many of the last <span class="hdays"></span> days were decoded into it, and the half-Kelly that state's μ/σ² implies on its own. States are labeled by mean, so "Bull" is simply the highest-drift state — it need not be positive in a bad sample.</div>
+      </h2>
+      <table id="hmm-table"><thead><tr><th>State</th><th class="num">μ ann.</th><th class="num">σ ann.</th><th class="num">Days</th><th class="num">½-Kelly</th></tr></thead><tbody></tbody></table>
+      <h2 style="margin-top:26px" class="hasinfo">HMM transition matrix
+        <button class="info" data-pop="p-htrans">i</button>
+        <div class="pop" id="p-htrans"><span class="kind hist">Model detail</span><br>
+          <b>Hidden-state persistence.</b> Fitted by EM, not counted from labels. Row = state today, column = tomorrow. Compare the diagonal with the Forecast matrix: the HMM typically finds stickier states because it is fit to explain the return distribution, not a ±5% threshold.</div>
+      </h2>
+      <table class="heat" id="hmm-trans"><thead><tr><th>from \ to</th><th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead><tbody></tbody></table>
     </div>
-    <div class="col">
-      <h2>Transition matrix</h2>
-      <table class="heat" id="trans-table"><thead><tr><th>from \ to</th>
-        <th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead>
-        <tbody></tbody></table>
-      <h2 style="margin-top:26px">Diagnostics</h2>
+    <div class="col hasinfo">
+      <h2>Walk-forward backtest
+        <button class="info" data-pop="p-bt">i</button>
+        <div class="pop" id="p-bt"><span class="kind hist">Model detail</span><br>
+          <b>Does the Markov label have any edge?</b> Over the last <span class="hdays"></span> days: each day re-estimate the transition matrix on a trailing <span class="lb"></span>-day window only, go long next day if P(Bull tomorrow | today's label) &gt; 50%, else flat. No look-ahead, no costs. Compared to buy-and-hold over the same days. A short, in-sample-adjacent test — treat it as a sanity check, not validation.</div>
+      </h2>
+      <table id="bt-table"><thead><tr><th></th><th class="num">Strategy</th><th class="num">Buy &amp; hold</th></tr></thead><tbody></tbody></table>
+      <p class="note" id="bt-note"></p>
+      <h2 style="margin-top:26px" class="hasinfo">Markov diagnostics
+        <button class="info" data-pop="p-diag">i</button>
+        <div class="pop" id="p-diag"><span class="kind hist">Model detail</span><br>
+          <b>Expected dwell</b> = average sessions a regime lasts once entered (1 / (1 − P(stay))). <b>Mixing half-life</b> = sessions for the forecast to close half the gap to the long-run mix; from the second eigenvalue of P. <b>Mean next-day return</b> = average daily return on days that started in each regime. <b>Regime-implied return</b> = those means, weighted by the forecast path and compounded.</div>
+      </h2>
       <table id="diag-table"><tbody></tbody></table>
     </div>
   </div>
 
+  <hr class="rule rule--faint">
+  <h2>Glossary</h2>
+  <dl class="glossary">
+    <dt>Regime</dt><dd>A persistent market state. Here: Bull / Sideways / Bear, defined two different ways on this page (rolling-return threshold, and HMM hidden state).</dd>
+    <dt>Markov chain</dt><dd>A model where tomorrow's state depends only on today's state, via a fixed table of transition probabilities. Used for the Forecast section.</dd>
+    <dt>Hidden Markov Model (HMM)</dt><dd>A Markov chain whose states are never observed directly; only returns are. The model infers which state best explains each day's return. Used for the Current State section only — this page does not forecast with it.</dd>
+    <dt>Nowcast vs forecast</dt><dd>A nowcast classifies today. A forecast assigns probabilities to future states. Current State is a nowcast; Forecast is a forecast.</dd>
+    <dt>Stationary / long-run mix</dt><dd>The regime shares a Markov chain settles into over a long run. Every forecast converges to it.</dd>
+    <dt>Kelly / half-Kelly</dt><dd>The bet size that maximizes long-run log growth, f* = μ/σ². Half-Kelly halves it for robustness to estimation error. Shown as a multiple of capital; a read, not an instruction.</dd>
+    <dt>Dirichlet posterior band</dt><dd>The range of forecasts consistent with the finite number of observed transitions. Narrow band = the matrix is well pinned down; it says nothing about whether the model is right.</dd>
+  </dl>
+
   <hr class="rule">
   <p class="disclosure" id="disclosure"></p>
-  <p class="confidential">Confidential — TON618 Capital Internal Use Only</p>
+  <div class="disclosure">
+<p><b class="goldtxt">Information only.</b> TON618 Capital. This dashboard is for information purposes only. Nothing here is an offer to sell or a solicitation of an offer to buy any security, fund interest, or digital asset, and nothing here is personalized investment advice or a recommendation regarding any instrument.</p>
+<p><b class="goldtxt">Publisher's exclusion.</b> All research is published solely as general, impersonal information of regular circulation. It is not tailored to the objectives or circumstances of any individual and is not issued in connection with compensation from any client. The Fund has no clients and distributes all research free of charge. On that basis it publishes in reliance on the publisher's exclusion from the definition of "investment adviser" under the Investment Advisers Act of 1940 (&sect;202(a)(11)(D); cf. <i>Lowe v. SEC</i>, 472 U.S. 181 (1985)).</p>
+<p><b class="goldtxt">Registration &amp; conflicts.</b> TON618 Capital is not registered as an investment adviser or broker-dealer in any capacity. The Fund may hold or transact in the securities or digital assets it discusses; material conflicts are disclosed where they exist. The Fund receives no compensation from any party in connection with its research.</p>
+<p><b class="goldtxt">Use of AI.</b> Artificial intelligence is used in the creation of this research. All methodology and data integrity are reviewed and approved before publication by TON618 Capital's Chief Investment Officer, Keyth Beck; errors may nonetheless occur, and readers should verify independently.</p>
+<p><b class="goldtxt">CFA.</b> This dashboard was prepared to align with CFA Institute analytical standards (methodology only). CFA&reg; and Chartered Financial Analyst&reg; are registered trademarks owned by CFA Institute. That reference describes the analytical framework applied; it does not imply this material was prepared, reviewed, or authored by a CFA charterholder, and it is not issued, reviewed, endorsed, certified, or approved by &mdash; nor affiliated with &mdash; CFA Institute.</p>
+<p><b class="goldtxt">Risk &amp; feedback.</b> Past performance is not indicative of future results. Digital assets and equities are volatile and may result in total loss of capital. Corrections and feedback are welcome &mdash; please direct them to CIO Keyth Beck at keyth@ton618capital.com.</p>
+  </div>
+  <p class="confidential">TON618 Capital — Internal Research</p>
 </div>
 
 <script>
-const DATA = /*__DATA__*/{"asset": "BTC", "asof": "2026-08-22", "history": {"start": "2010-07-18", "end": "2026-08-21", "n_closes": 5879, "last_close": 78359.170712256}, "params": {"window": 20, "bull_threshold": 0.05, "bear_threshold": -0.05, "lookback": null, "n_boot": 2000, "periods_per_year": 365, "risk_free": 0.04}, "states": ["Bull", "Sideways", "Bear"], "current_state": "Bull", "days_in_regime": 3, "regime_counts": {"Bull": 2470, "Sideways": 1663, "Bear": 1726}, "transition_matrix": [[0.9036046975654864, 0.08991494561776232, 0.0064803568167512895], [0.12988574901403652, 0.7450390852464719, 0.12507516573949157], [0.013325608899202302, 0.11703360408395086, 0.8696407870168469]], "transition_counts": [[2231.0, 222.0, 16.0], [216.0, 1239.0, 208.0], [23.0, 202.0, 1501.0]], "trajectory": [[1.0, 0.0, 0.0], [0.9036046975654864, 0.08991494561776232, 0.0064803568167512895], [0.828266474222001, 0.14899613558861358, 0.022737390189385562], [0.7680809411831793, 0.18814251827221376, 0.0437765405446071], [0.7190619275290719, 0.2143588120802856, 0.06657926039064264], [0.6784770996053336, 0.23215211817715695, 0.08937078221750963], [0.6444192662394673, 0.24442701802136754, 0.1111537157391653], [0.6155290534342925, 0.2530593251554001, 0.13141162141030763], [0.5908148840357836, 0.2592639251647299, 0.1499211907994868], [0.569535584872979, 0.26383066309820374, 0.1666337520288177], [0.5511233694202534, 0.2672756655978541, 0.18160096498189296], [0.5351329090007289, 0.2699384606327214, 0.19492863036655025], [0.5212073122334414, 0.2720443503446647, 0.20674833742189447], [0.5090551074342171, 0.27374450412915874, 0.21720038843662476], [0.498434423783615, 0.27514176151620157, 0.22642381470018405], [0.4891419157389543, 0.27630726550645734, 0.234550818754589], [0.4810048414539383, 0.27729120875261226, 0.24170394979345017], [0.47387526293770116, 0.2781297970427997, 0.2479949400194998], [0.46762569424229383, 0.27884977969026586, 0.253524526067441], [0.46214575519785817, 0.2794714126582283, 0.25838283214391433], [0.45733953768527685, 0.2800104101647416, 0.2626500521499824], [0.4531234883631248, 0.28047924172440275, 0.2663972699124733], [0.4494246748871115, 0.280888004115256, 0.2696873209976334], [0.44617934399809134, 0.2812450159965911, 0.2725756400053185], [0.44333170712670505, 0.2815572304348988, 0.2751110624383971], [0.44083290732666974, 0.28183052690520494, 0.27733656576812626], [0.43864013359280657, 0.2820699226848921, 0.27928994372230226], [0.4367158569969948, 0.28227972962868514, 0.2810044133743211], [0.43502716890969917, 0.2824636733391694, 0.2825091577511325], [0.4335452057229673, 0.28262498595307417, 0.2838298083239596], [0.4322446475085257, 0.2827664800123075, 0.28498887247916793]], "horizons": [1, 5, 10, 20], "bands": {"1": {"lo": [0.8927912189563059, 0.08078462782434727, 0.0042923098123515075], "mid": [0.9029413663258358, 0.09008297762763684, 0.006793526422630234], "hi": [0.9123428670864133, 0.09982364062746882, 0.009897481773200843]}, "5": {"lo": [0.6488726407874748, 0.2126197893912254, 0.07857638459057391], "mid": [0.6765264454699809, 0.23256213680986526, 0.09052492542483481], "hi": [0.7038944027533377, 0.2535403416308699, 0.10426567143100864]}, "10": {"lo": [0.5145117842158607, 0.2462607245883838, 0.16173298524818291], "mid": [0.5489620952382164, 0.2671917502229727, 0.18270525567152182], "hi": [0.5843158334287947, 0.28927113718069514, 0.20552533573767284]}, "20": {"lo": [0.4202006277700639, 0.2594472889652098, 0.23344895546775096], "mid": [0.4561043100953661, 0.27968304389480625, 0.2632511087890038], "hi": [0.49499121370749033, 0.30150430341792206, 0.2947049509513194]}}, "stationary": [0.42291890264862275, 0.2837800167970965, 0.2933010805542807], "dwell": {"Bull": 10.4, "Sideways": 3.9, "Bear": 7.7}, "mixing": {"lambda2": 0.8776, "half_life_days": 5.3}, "regime_daily_return": {"Bull": 0.007509039359627423, "Sideways": 0.0003132182610045588, "Bear": 0.000764354816209741}, "expected_return": {"1": 0.00681831953441181, "5": 0.030069524658138835, "10": 0.05427593615566706, "20": 0.09657269109519317}, "max_horizon": 30, "kelly_handoff": {"current_drift_daily": 0.004283999456656756, "baseline_drift_daily": 0.0034887858628091634, "regime_edge_annual": 0.29025296175437126, "regime_tilt": 1.228, "exp_return_20d": 0.09657269109519317, "p_bull_20d": 0.45733953768527685, "p_bear_20d": 0.2626500521499824}}/*__END_DATA__*/;
+const DATA = /*__DATA__*/{"asset": "BTC", "asof": "2026-08-22", "history": {"start": "2010-07-18", "end": "2026-08-22", "n_closes": 5880, "last_close": 77020.1308082058}, "params": {"window": 20, "bull_threshold": 0.05, "bear_threshold": -0.05, "lookback": null, "n_boot": 2000, "periods_per_year": 365, "risk_free": 0.04}, "states": ["Bull", "Sideways", "Bear"], "current_state": "Bull", "days_in_regime": 4, "regime_counts": {"Bull": 2471, "Sideways": 1663, "Bear": 1726}, "transition_matrix": [[0.9036437240036717, 0.08987854280581555, 0.006477733190512876], [0.12988574901403652, 0.7450390852464719, 0.12507516573949157], [0.013325608899202302, 0.11703360408395086, 0.8696407870168469]], "transition_counts": [[2232.0, 222.0, 16.0], [216.0, 1239.0, 208.0], [23.0, 202.0, 1501.0]], "trajectory": [[1.0, 0.0, 0.0], [0.9036437240036717, 0.08987854280581555, 0.006477733190512876], [0.8283322415228975, 0.1489393209059812, 0.022728437571121373], [0.768165196965538, 0.18807490119632125, 0.043759901838140984], [0.7191590359859403, 0.21428609990901015, 0.0665548641050498], [0.6785831441086075, 0.23207764167282596, 0.08933921421856686], [0.6445314771345473, 0.24435266824917815, 0.11111585461627511], [0.6156454399956897, 0.25298612732384623, 0.13136843268046472], [0.5909339950568032, 0.25919238905271824, 0.14987361589047918], [0.5696563507140125, 0.2637609962375658, 0.16658265304842226], [0.5512449960024715, 0.2672079023269114, 0.18154710167061786], [0.5352548052359092, 0.2698725397094783, 0.1948726550546133], [0.5213290392391298, 0.2719801612011559, 0.2066907995597151], [0.5091763421618702, 0.27368191407913295, 0.2171417437589977], [0.49855493236050674, 0.27508063144791417, 0.22636443619157998], [0.48926153349889084, 0.27624745865612227, 0.23449100784498786], [0.4811234576843815, 0.27723259535401584, 0.24164394696160368], [0.47399280903616897, 0.27807225654741646, 0.2479349344164156], [0.46774213439857193, 0.2787932015801866, 0.2534646640212425], [0.46226107899113, 0.27941569646519676, 0.2583232245436743], [0.4574537541630107, 0.2799554650604367, 0.2625907807765537], [0.4532366212864354, 0.2804249858970983, 0.2663383928164675], [0.44953675890712586, 0.2808343640577232, 0.2696288770351521], [0.44629042158319543, 0.28119192577609475, 0.27251765264071104], [0.44344182609995353, 0.28150463098404677, 0.275053542916001], [0.44094211890147206, 0.28177836535353273, 0.27727951574499654], [0.43874849081666845, 0.2820181517401047, 0.27923335744322825], [0.4368234135297823, 0.2822283070102443, 0.28094827945997475], [0.43513397807602483, 0.28241256126347775, 0.2824534606604989], [0.4336513197888184, 0.2825741506677081, 0.28377452954347504], [0.4323501171408069, 0.28271589137590614, 0.2849339914832885]], "horizons": [1, 5, 10, 20], "bands": {"1": {"lo": [0.8928338365265097, 0.08075223944076357, 0.004290561500164824], "mid": [0.9029808437710831, 0.09004611832143183, 0.006790806990286228], "hi": [0.9123786283241142, 0.09978356606979844, 0.009893515361201435]}, "5": {"lo": [0.648984852283079, 0.2125485054429942, 0.0785483599931275], "mid": [0.676632121185563, 0.23248798298935325, 0.09049361886566062], "hi": [0.7039945504288372, 0.25346102938218834, 0.10422935749309503]}, "10": {"lo": [0.5146363271427796, 0.24619785457691268, 0.16168439802030235], "mid": [0.5490828926288241, 0.2671253725764193, 0.1826503842734543], "hi": [0.584434486930001, 0.2892008697110112, 0.20546695957461536]}, "20": {"lo": [0.4203136210410009, 0.25939287461492844, 0.2333943695683492], "mid": [0.45621943539921617, 0.2796269157420618, 0.26319090546274004], "hi": [0.4951074468288022, 0.30144912804559487, 0.29464327290700004]}}, "stationary": [0.42301773485037525, 0.28373141599557605, 0.29325084915404864], "dwell": {"Bull": 10.4, "Sideways": 3.9, "Bear": 7.7}, "mixing": {"lambda2": 0.8776, "half_life_days": 5.3}, "regime_daily_return": {"Bull": 0.007499080845722195, "Sideways": 0.0003132182610045588, "Bear": 0.000764354816209741}, "expected_return": {"1": 0.006809600229474633, "5": 0.030032630816822392, "10": 0.0542114637550708, "20": 0.09646141859201074}, "max_horizon": 30, "kelly_handoff": {"current_drift_daily": 0.004279389351579249, "baseline_drift_daily": 0.0034852617524362283, "regime_edge_annual": 0.2898565736872026, "regime_tilt": 1.228, "exp_return_20d": 0.09646141859201074, "p_bull_20d": 0.4574537541630107, "p_bear_20d": 0.2625907807765537}, "hmm": {"window_days": 600, "start": "2024-12-31", "end": "2026-08-22", "current_state": "Bear", "days_in_state": 4, "posterior": {"Bear": 0.8050806355630092, "Bull": 7.576389551959256e-05, "Sideways": 0.19484360054157118}, "converged": true, "by_state": {"Bear": {"mu_daily": -0.00496685537312367, "vol_daily": 0.04205475581124901, "mu_annual": -1.8129022111901396, "vol_annual": 0.8034549816358603, "days": 61, "full_kelly": -2.808350328281857, "half_kelly": 0.0}, "Bull": {"mu_daily": 0.0013899892232380655, "vol_daily": 0.0063276882985186895, "mu_annual": 0.507346066481894, "vol_annual": 0.12089031520006793, "days": 16, "full_kelly": 34.71532838204539, "half_kelly": 2.0}, "Sideways": {"mu_daily": 0.00016741878162215373, "vol_daily": 0.019895782161284875, "mu_annual": 0.061107855292086115, "vol_annual": 0.3801083844778947, "days": 522, "full_kelly": 0.4229432933018755, "half_kelly": 0.21147164665093776}}, "transition": {"Bear": {"Bear": 0.8648739277157665, "Bull": 1.3577782672005095e-27, "Sideways": 0.13512607228422194}, "Bull": {"Bear": 0.10294126492263077, "Bull": 0.38546326547546583, "Sideways": 0.5115954696018999}, "Sideways": {"Bear": 1.34792307445987e-12, "Bull": 0.18247788180814356, "Sideways": 0.8175221181905071}}, "kelly_mixture": {"mu_daily": -0.003965993291336125, "vol_daily": 0.038796076101508564, "half_kelly": 0.0}, "backtest": {"strategy": {"sharpe": -0.47049526963649124, "max_drawdown": -0.243187954412861, "total_return": -0.08642099676250381}, "buy_hold": {"sharpe": -0.752324577235451, "max_drawdown": -0.5311409452054985, "total_return": -0.3264005427853093}, "n_days": 327, "days_invested": 70, "lookback": 252}}}/*__END_DATA__*/;
 const STATES = ["Bull","Sideways","Bear"];
 const FILL = {Bull:"#C9A24B", Sideways:"#3A3A40", Bear:"#B0413E"};
+const CLS  = {Bull:"gold", Sideways:"gray", Bear:"ox"};
 function pct(x,d=1){ return (x*100).toFixed(d) + "%"; }
+
+/* ---- info popups ---- */
+document.addEventListener("click", e=>{
+  const btn = e.target.closest(".info[data-pop]");
+  document.querySelectorAll(".pop.open").forEach(p=>{ if(!btn || p.id!==btn.dataset.pop){ p.classList.remove("open"); } });
+  document.querySelectorAll(".info[aria-expanded]").forEach(b=>{ if(b!==btn) b.setAttribute("aria-expanded","false"); });
+  if(!btn) return;
+  const pop = document.getElementById(btn.dataset.pop);
+  const open = !pop.classList.contains("open");
+  pop.classList.toggle("open", open); btn.setAttribute("aria-expanded", open);
+  if(open){ const r = btn.getBoundingClientRect(), host = btn.closest(".hasinfo").getBoundingClientRect();
+    pop.style.top = (r.bottom - host.top + 8) + "px";
+    pop.style.left = Math.max(0, Math.min(r.left - host.left, host.width - 340)) + "px"; }
+});
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".pop.open").forEach(p=>p.classList.remove("open")); });
 
 function drawChart(d){
   const svg = document.getElementById("chart");
   const traj = d.trajectory, H = traj.length - 1;
   const W = 920, Hpx = 300, mL = 38, mR = 14, mT = 12, mB = 30;
   const pw = W - mL - mR, ph = Hpx - mT - mB;
-  const X = h => mL + (h / H) * pw;
-  const Y = p => mT + (1 - p) * ph;            // p in [0,1], stacked to full height
+  const X = h => mL + (h / H) * pw, Y = p => mT + (1 - p) * ph;
   let s = "";
-
-  // y gridlines 0/25/50/75/100
   [0,0.25,0.5,0.75,1].forEach(g=>{
     s += `<line x1="${mL}" y1="${Y(g)}" x2="${W-mR}" y2="${Y(g)}" stroke="#26262B" stroke-width="1"/>`;
     s += `<text x="${mL-7}" y="${Y(g)+4}" fill="#9A958A" font-size="11" text-anchor="end">${(g*100).toFixed(0)}%</text>`;
   });
-
-  // stacked areas (bottom->top: Bear, Sideways, Bull)
-  const order = ["Bear","Sideways","Bull"];
-  const idx = {Bull:0, Sideways:1, Bear:2};
+  const order = ["Bear","Sideways","Bull"], idx = {Bull:0, Sideways:1, Bear:2};
   let lower = traj.map(()=>0);
   order.forEach(st=>{
     const upper = lower.map((lo,h)=> lo + traj[h][idx[st]]);
@@ -151,14 +302,9 @@ function drawChart(d){
     s += `<path d="${top}${bot}Z" fill="${FILL[st]}" fill-opacity="${st==='Sideways'?0.92:0.85}" stroke="#0B0B0C" stroke-width="0.6"/>`;
     lower = upper;
   });
-
-  // long-run (stationary) reference ticks at right edge
   let cum = 0; const pi = d.stationary;
   order.forEach(st=>{ cum += pi[idx[st]];
-    s += `<line x1="${W-mR-46}" y1="${Y(cum)}" x2="${W-mR}" y2="${Y(cum)}" stroke="#F6F3EC" stroke-dasharray="3 3" stroke-width="1" opacity="0.6"/>`;
-  });
-
-  // horizon guide lines + P(Bull) callouts
+    s += `<line x1="${W-mR-46}" y1="${Y(cum)}" x2="${W-mR}" y2="${Y(cum)}" stroke="#F6F3EC" stroke-dasharray="3 3" stroke-width="1" opacity="0.6"/>`; });
   (d.horizons||[5,10,20]).filter(h=>h<=H).forEach(h=>{
     s += `<line x1="${X(h)}" y1="${mT}" x2="${X(h)}" y2="${mT+ph}" stroke="#F6F3EC" stroke-width="1" opacity="0.25"/>`;
     s += `<text x="${X(h)}" y="${Hpx-10}" fill="#9A958A" font-size="11" text-anchor="middle">${h}d</text>`;
@@ -168,87 +314,91 @@ function drawChart(d){
   s += `<text x="${mL-30}" y="${mT+ph/2}" fill="#9A958A" font-size="10.5" text-anchor="middle" transform="rotate(-90 ${mL-30} ${mT+ph/2})">probability</text>`;
   svg.innerHTML = s;
 }
+const heat = (tbl, rows) => document.querySelector(tbl+" tbody").innerHTML = STATES.map((s,i)=>
+  `<tr><td class="muted">${s}</td>` + rows[i].map(v=>`<td class="num" style="background:rgba(201,162,75,${(0.07+0.55*v).toFixed(3)})">${pct(v)}</td>`).join("") + "</tr>").join("");
 
 (function render(d){
-  if(!d){
-    document.getElementById("headline").textContent = "Template only — no data injected";
-    document.getElementById("asof").textContent =
-      "Run scripts/build_artifact.py <regime_result.json> <out.html> to produce the live page.";
-    return;
-  }
-  const traj = d.trajectory, H = traj.length - 1, cur = d.current_state;
-  const si = STATES.indexOf(cur);
-  const far = Math.min(20, H);
-  const dist = traj[far];
+  if(!d){ document.getElementById("headline").textContent = "Template only — no data injected"; return; }
+  const traj = d.trajectory, H = traj.length - 1, cur = d.current_state, si = STATES.indexOf(cur);
+  const far = Math.min(20, H), dist = traj[far];
   let topI = 0; dist.forEach((p,i)=>{ if(p>dist[topI]) topI = i; });
-  const k = d.kelly_handoff;
+  const k = d.kelly_handoff, h = d.hmm;
+
+  // fill popup placeholders
+  const fill = (cls, v) => document.querySelectorAll("."+cls).forEach(e=>e.textContent=v);
+  fill("win", d.params.window); fill("bt", "+"+(d.params.bull_threshold*100).toFixed(0)+"%");
+  fill("brt", (d.params.bear_threshold*100).toFixed(0)+"%"); fill("hdays", h.window_days);
+  fill("nclose", d.history.n_closes.toLocaleString("en-US")); fill("lb", h.backtest.lookback);
 
   document.getElementById("headline").textContent =
-    `${d.asset} in ${cur} — ${pct(dist[topI])} ${STATES[topI]} in ${far} sessions`;
+    `${d.asset} today: ${cur} (label) · ${h.current_state} (HMM) — ${pct(dist[topI])} ${STATES[topI]} in ${far} sessions`;
   document.getElementById("asof").textContent =
-    `As of ${d.asof} · ${d.history.n_closes.toLocaleString("en-US")} daily closes ` +
-    `(${d.history.start} → ${d.history.end}) · ${d.params.window}-day regime window`;
+    `As of ${d.asof} · ${d.history.n_closes.toLocaleString("en-US")} daily closes (${d.history.start} → ${d.history.end}) · last close $${Math.round(d.history.last_close).toLocaleString("en-US")} · rebuilt daily 05:00 PT`;
 
-  document.getElementById("cur-regime").textContent = cur;
-  document.getElementById("cur-regime").classList.add(cur==="Bull"?"gold":cur==="Bear"?"ox":"");
-  document.getElementById("cur-sub").textContent = `${d.days_in_regime} sessions running`;
+  // ---- current state ----
+  const cr = document.getElementById("cur-regime"); cr.textContent = cur; cr.classList.add(CLS[cur]);
+  document.getElementById("cur-sub").textContent = `${d.days_in_regime} sessions running · ${d.params.window}d return vs ±${(d.params.bull_threshold*100).toFixed(0)}%`;
+
+  const hr = document.getElementById("hmm-regime"); hr.textContent = h.current_state; hr.classList.add(CLS[h.current_state]);
+  document.getElementById("hmm-sub").textContent = `${h.days_in_state} sessions decoded · P(${h.current_state}) ${pct(h.posterior[h.current_state],0)}${h.converged?"":" · EM not converged"}`;
+  document.getElementById("hmm-bar").innerHTML = STATES.map(s=>`<span style="width:${(h.posterior[s]*100).toFixed(1)}%;background:${FILL[s]}"></span>`).join("");
+  document.getElementById("hmm-key").textContent = STATES.map(s=>`${s} ${pct(h.posterior[s],0)}`).join(" · ");
+
+  const km = h.kelly_mixture, kv = document.getElementById("kelly-val");
+  kv.textContent = km.half_kelly.toFixed(2) + "×"; kv.classList.add(km.half_kelly>=1?"jade":km.half_kelly>0?"gold":"ox");
+  document.getElementById("kelly-sub").textContent = `μ ${pct(km.mu_daily*365,0)} · σ ${pct(km.vol_daily*Math.sqrt(365),0)} ann. (posterior mix)`;
+
+  const at = document.getElementById("agree-tag");
+  if(cur===h.current_state){ at.textContent = `Models agree — both ${cur}`; at.classList.add("ok"); }
+  else { at.textContent = `Models disagree — label ${cur}, HMM ${h.current_state}`; at.classList.add("warn"); }
+
+  // ---- forecast ----
   document.getElementById("fwd-regime").textContent = STATES[topI];
-  document.getElementById("fwd-sub").textContent =
-    `${pct(dist[topI])} · P(stay ${cur}) ${pct(dist[si])}`;
-
-  const ev = document.getElementById("edge-val");
-  const eg = k.regime_edge_annual;
-  ev.textContent = (eg>=0?"+":"") + pct(eg);
-  ev.classList.add(eg>=0?"jade":"ox");
-  document.getElementById("edge-tag").textContent =
-    (k.regime_tilt!=null ? "tilt ×"+k.regime_tilt.toFixed(2)+" vs avg drift"
-                         : (eg>=0?"lean in":"lean out"));
+  document.getElementById("fwd-sub").textContent = `${pct(dist[topI])} · P(stay ${cur}) ${pct(dist[si])}`;
+  const ev = document.getElementById("edge-val"), eg = k.regime_edge_annual;
+  ev.textContent = (eg>=0?"+":"") + pct(eg); ev.classList.add(eg>=0?"jade":"ox");
+  document.getElementById("edge-tag").textContent = k.regime_tilt!=null ? "tilt ×"+k.regime_tilt.toFixed(2)+" vs avg drift" : (eg>=0?"lean in":"lean out");
+  let mi = 0; d.stationary.forEach((p,i)=>{ if(p>d.stationary[mi]) mi=i; });
+  document.getElementById("stat-val").textContent = STATES[mi] + " " + pct(d.stationary[mi],0);
+  document.getElementById("stat-sub").textContent = STATES.map((s,i)=>`${s} ${pct(d.stationary[i],0)}`).join(" · ");
 
   drawChart(d);
 
-  // snapshot table
-  const rowsTb = document.querySelector("#snap-table tbody");
-  const mkRow = (lab, arr, band) => {
-    let h = `<tr><td class="muted">${lab}</td>`;
-    for(let k2=0;k2<3;k2++){
-      const b = band ? `<div class="band">${pct(band.lo[k2],0)}–${pct(band.hi[k2],0)}</div>` : "";
-      h += `<td class="num">${pct(arr[k2])}${b}</td>`;
-    }
-    return h + "</tr>";
-  };
+  const mkRow = (lab, arr, band) => `<tr><td class="muted">${lab}</td>` + [0,1,2].map(j=>
+    `<td class="num">${pct(arr[j])}${band?`<div class="bandtxt">${pct(band.lo[j],0)}–${pct(band.hi[j],0)}</div>`:""}</td>`).join("") + "</tr>";
   let tb = mkRow("now", traj[0], null);
   d.horizons.forEach(hz=>{ const b = d.bands[hz]; tb += mkRow(hz+"d", b.mid, b); });
   tb += mkRow("long-run", d.stationary, null);
-  rowsTb.innerHTML = tb;
-  document.getElementById("snap-note").textContent =
-    "Median with 90% Dirichlet-posterior band (estimation uncertainty from the finite transition sample).";
+  document.querySelector("#snap-table tbody").innerHTML = tb;
+  heat("#trans-table", d.transition_matrix);
 
-  // transition matrix, gold-tinted by probability
-  const P = d.transition_matrix;
-  document.querySelector("#trans-table tbody").innerHTML = STATES.map((s,i)=>
-    `<tr><td class="muted">${s}</td>` + P[i].map(v=>
-      `<td class="num" style="background:rgba(201,162,75,${(0.07+0.55*v).toFixed(3)})">${pct(v)}</td>`
-    ).join("") + "</tr>").join("");
+  // ---- model detail ----
+  document.querySelector("#hmm-table tbody").innerHTML = STATES.map(s=>{ const x = h.by_state[s];
+    return `<tr><td class="muted">${s}</td><td class="num ${x.mu_annual>=0?"jade":"oxblood"}">${(x.mu_annual>=0?"+":"")+pct(x.mu_annual,0)}</td><td class="num">${pct(x.vol_annual,0)}</td><td class="num">${x.days}</td><td class="num">${x.half_kelly.toFixed(2)}×</td></tr>`; }).join("");
+  heat("#hmm-trans", STATES.map(a=>STATES.map(b=>h.transition[a][b])));
 
-  // diagnostics
+  const bt = h.backtest, S = bt.strategy, B = bt.buy_hold, sg = x=>(x>=0?"+":"")+pct(x,1);
+  document.querySelector("#bt-table tbody").innerHTML = [
+    ["Total return", sg(S.total_return), sg(B.total_return)],
+    ["Sharpe (ann.)", S.sharpe.toFixed(2), B.sharpe.toFixed(2)],
+    ["Max drawdown", pct(S.max_drawdown,1), pct(B.max_drawdown,1)],
+  ].map(r=>`<tr><td class="muted">${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td></tr>`).join("");
+  document.getElementById("bt-note").textContent = `${bt.n_days} test days · long on ${bt.days_invested} (${pct(bt.days_invested/bt.n_days,0)}) · ${bt.lookback}d rolling estimation · no costs.`;
+
   const dw = d.dwell, mx = d.mixing, rr = d.regime_daily_return, er = d.expected_return;
-  const dwTxt = STATES.map(s=> `${s} ${dw[s]==null?"abs":dw[s]+"d"}`).join(" · ");
-  const erTxt = Object.keys(er).sort((a,b)=>a-b).map(h=>`${h}d ${pct(er[h])}`).join(" · ");
-  const mixTxt = mx.half_life_days!=null ? `λ₂ ${mx.lambda2} · ~${mx.half_life_days}d half-life` : `λ₂ ${mx.lambda2} · slow`;
   document.querySelector("#diag-table tbody").innerHTML = [
-    ["Expected dwell", dwTxt],
-    ["Mixing to long-run", mixTxt],
+    ["Expected dwell", STATES.map(s=>`${s} ${dw[s]==null?"abs":dw[s]+"d"}`).join(" · ")],
+    ["Mixing to long-run", mx.half_life_days!=null ? `λ₂ ${mx.lambda2} · ~${mx.half_life_days}d half-life` : `λ₂ ${mx.lambda2} · slow`],
     ["Mean next-day return", STATES.map(s=>`${s} ${pct(rr[s],2)}`).join(" · ")],
-    ["Regime-implied return", erTxt],
+    ["Regime-implied return", Object.keys(er).sort((a,b)=>a-b).map(hz=>`${hz}d ${pct(er[hz])}`).join(" · ")],
   ].map(r=>`<tr><td class="muted">${r[0]}</td><td class="num">${r[1]}</td></tr>`).join("");
 
   document.getElementById("disclosure").textContent =
-    "TON618 Capital internal research. Not investment advice. A first-order Markov chain on " +
-    `${d.params.window}-day rolling-return regime labels (Bull > +${(d.params.bull_threshold*100).toFixed(0)}%, ` +
-    `Bear < ${(d.params.bear_threshold*100).toFixed(0)}%) is assumed stationary over the estimation window; ` +
-    "real regimes shift and the matrix is re-estimated, not fixed. Confidence bands reflect sampling error in the " +
-    "transition counts only, not model misspecification. The 'regime edge vs baseline' is the forward drift " +
-    "conditioned on today's state minus the long-run-mix drift — a directional Kelly input, not an execution rule.";
+    "TON618 Capital internal research. Not investment advice. Current State: the rolling-return label is a mechanical " +
+    `${d.params.window}-day threshold; the HMM is a 3-state Gaussian mixture fit on the trailing ${h.window_days} days and re-fit every run, ` +
+    "so its states and today's decode can change as new data arrives. Forecast: a first-order Markov chain on the rolling-return labels, " +
+    "assumed stationary over the full history; bands reflect sampling error in the transition counts only, not model misspecification. " +
+    "Kelly figures are sizing reads, not execution rules. Backtest is gross of costs and not out-of-sample validation.";
 })(DATA);
 </script>
 </body>
