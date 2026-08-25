@@ -91,26 +91,37 @@ td.muted{color:var(--warmgray)}
   <p class="eyebrow"><span class="wordmark">TON618 CAPITAL</span>&nbsp;&nbsp;|&nbsp;&nbsp;Internal Research — BTC Regime Monitor</p>
   <h1 id="headline"></h1>
   <p class="asof" id="asof"></p>
-  <p class="note" style="margin-top:10px">Two models, one page. <b style="color:var(--ivory)">Current State</b> tells you what regime today's data is in — nothing about tomorrow. <b style="color:var(--gold)">Forecast</b> gives the probability of each regime at 1–20 sessions ahead; it is a probability path, not a prediction. Click any <span class="info" style="cursor:default">i</span> for what a number means and how it is computed.</p>
+  <p class="note" style="margin-top:10px">Two independent models, two axes. <b style="color:var(--ivory)">Direction</b> (Bull / Sideways / Bear) comes from a mechanical rolling-return label; <b style="color:var(--ivory)">volatility</b> (Calm / Normal / Turbulent) comes from a hidden Markov model on daily returns. Neither speaks for the other — they combine into the Regime Read below. <b style="color:var(--gold)">Forecast</b> projects the direction label 1–20 sessions ahead; it is a probability path, not a prediction. Click any <span class="info" style="cursor:default">i</span> for what a number means and how it is computed.</p>
 
-  <!-- ================= CURRENT STATE ================= -->
-  <div class="band now"><span class="kind">Current State</span><span class="what">Where the data is <em>today</em>. Descriptive — these numbers say nothing about what happens next.</span></div>
+  <!-- ================= REGIME READ ================= -->
+  <div class="band now"><span class="kind">Regime Read</span><span class="what">Direction &times; volatility, <em>today</em>. Two independent models, each naming only what it can measure. Descriptive — nothing here is a forecast.</span></div>
 
-  <div class="hero">
+  <div class="hasinfo" style="margin:6px 0 2px">
+    <p class="label">Combined regime
+      <button class="info" data-pop="p-cell">i</button>
+      <div class="pop" id="p-cell"><span class="kind now">Current state</span><br>
+        <b>Direction &times; volatility grid.</b> The trend label (Bull / Sideways / Bear) and the volatility state (Calm / Normal / Turbulent) come from two independent models and combine into one named cell — e.g. Bull trend in Turbulent vol = "Volatile Rally". Neither model speaks for the other: the volatility model never calls direction, and the trend label says nothing about the size of daily swings. When no volatility state reaches <span class="thresh"></span> probability, the vol axis reads "shifting" until the data settles.</div>
+    </p>
+    <div class="big" id="cell-name"></div>
+    <div class="sub" id="cell-sub"></div>
+    <p class="note" id="cell-play" style="max-width:660px;margin-top:8px"></p>
+  </div>
+
+  <div class="hero" style="margin-top:20px">
     <div class="cell hasinfo">
-      <p class="label">Rolling-return regime
+      <p class="label">Trend (direction)
         <button class="info" data-pop="p-roll">i</button>
         <div class="pop" id="p-roll"><span class="kind now">Current state</span><br>
-          <b>Observed label.</b> BTC's simple return over the trailing <span class="win"></span> days, bucketed: above <span class="bt"></span> = Bull, below <span class="brt"></span> = Bear, between = Sideways. Fully mechanical — no fitting, no hidden state. This label is the input to the Forecast section below.</div>
+          <b>Observed label — the direction axis.</b> BTC's simple return over the trailing <span class="win"></span> days, bucketed: above <span class="bt"></span> = Bull, below <span class="brt"></span> = Bear, between = Sideways. Fully mechanical — no fitting, no hidden state. Direction accumulates over weeks, so it is measured on a 20-day window where drift is actually identifiable. This label is also the input to the Forecast section below.</div>
       </p>
       <div class="big" id="cur-regime"></div>
       <div class="sub" id="cur-sub"></div>
     </div>
     <div class="cell hasinfo">
-      <p class="label">HMM decoded state
+      <p class="label">Volatility regime
         <button class="info" data-pop="p-hmm">i</button>
         <div class="pop" id="p-hmm"><span class="kind now">Current state</span><br>
-          <b>Hidden Markov Model.</b> A 3-state Gaussian HMM is fit on the last <span class="hdays"></span> days of daily log returns (Baum-Welch EM). Each state has its own mean and volatility; states are named Bear / Sideways / Bull by ascending fitted mean. The Viterbi path gives the most likely state today; the bar shows the filtered probability of each state. Unlike the rolling label, this reacts to the <em>distribution</em> of returns (drift and vol), so it can read Bear while the 20-day return is still positive — typically a choppy, high-vol market with negative drift.</div>
+          <b>Hidden Markov Model — the volatility axis.</b> A 3-state Gaussian HMM is fit on the last <span class="hdays"></span> days of daily log returns (Baum-Welch EM). At daily frequency such a model separates states by volatility, not drift — daily swings dwarf daily trend — so the states are named by what they measure: Calm / Normal / Turbulent, in ascending fitted vol. The bar shows the filtered probability of each state today; a state is declared only above <span class="thresh"></span>, otherwise the read is "shifting". This model makes no directional call: a +7% day and a −7% day look identical to it, and both belong to the Turbulent state.</div>
       </p>
       <div class="big" id="hmm-regime"></div>
       <div class="sub" id="hmm-sub"></div>
@@ -118,20 +129,15 @@ td.muted{color:var(--warmgray)}
       <div class="pkey" id="hmm-key"></div>
     </div>
     <div class="cell hasinfo">
-      <p class="label">Half-Kelly (HMM mixture)
+      <p class="label">Half-Kelly (combined)
         <button class="info" data-pop="p-kelly">i</button>
         <div class="pop" id="p-kelly"><span class="kind now">Current state</span><br>
-          <b>Sizing read, not a rule.</b> Continuous Kelly f* = μ/σ² using the posterior-weighted mean and variance across the HMM states today; shown at half-Kelly, floored at 0, capped at 2×. Risk-free assumed 0. A 1.0× means "fully invested"; 0 means the mixture drift is not positive. Cross-check against the Forecast edge below — they are independent reads.</div>
+          <b>Sizing read, not a rule.</b> Continuous Kelly f* = μ/σ² at half weight, floored at 0, capped at 2×; risk-free assumed 0. Each model contributes the quantity it actually measures: the drift μ comes from the direction model (expected daily drift over the next 20 sessions given today's trend label), and the variance σ² comes from the volatility model (probability-weighted across today's vol states). Turbulence therefore cuts the size even when the trend is up — which is the correct lesson of high vol, without mislabeling it "bearish".</div>
       </p>
       <div class="big" id="kelly-val"></div>
       <div class="sub" id="kelly-sub"></div>
+      <span class="tag" id="kelly-tag" style="display:none"></span>
     </div>
-  </div>
-  <div class="hasinfo" style="margin-top:16px">
-    <span class="tag" id="agree-tag"></span>
-    <button class="info" data-pop="p-agree" style="margin-left:6px">i</button>
-    <div class="pop" id="p-agree"><span class="kind now">Current state</span><br>
-      <b>Do the two nowcasts agree?</b> They measure different things. The rolling label is price level vs 20 days ago; the HMM is the return distribution over the last ~600 days. Disagreement is information: Bull label + Bear HMM usually means price is up but the path there was volatile with weak drift. Bear label + Bull HMM means a sharp drop inside an otherwise healthy return distribution.</div>
   </div>
 
   <!-- ================= FORECAST ================= -->
@@ -204,18 +210,18 @@ td.muted{color:var(--warmgray)}
 
   <div class="cols">
     <div class="col hasinfo">
-      <h2>HMM fitted states
+      <h2>HMM fitted vol states
         <button class="info" data-pop="p-hstates">i</button>
         <div class="pop" id="p-hstates"><span class="kind hist">Model detail</span><br>
-          <b>What each hidden state looks like.</b> Mean and volatility of daily log returns the HMM assigned to each state (annualized ×365 / ×√365), how many of the last <span class="hdays"></span> days were decoded into it, and the half-Kelly that state's μ/σ² implies on its own. States are labeled by mean, so "Bull" is simply the highest-drift state — it need not be positive in a bad sample.</div>
+          <b>What each hidden state looks like.</b> Mean and volatility of daily log returns the HMM assigned to each state (annualized ×365 / ×√365) and how many of the last <span class="hdays"></span> days were decoded into it. States are labeled by ascending fitted volatility — Calm / Normal / Turbulent. The fitted means are shown for transparency, but they carry little information at daily frequency and are given no role on this page: direction comes solely from the rolling-return label, never from these states.</div>
       </h2>
-      <table id="hmm-table"><thead><tr><th>State</th><th class="num">μ ann.</th><th class="num">σ ann.</th><th class="num">Days</th><th class="num">½-Kelly</th></tr></thead><tbody></tbody></table>
+      <table id="hmm-table"><thead><tr><th>State</th><th class="num">μ ann.</th><th class="num">σ ann.</th><th class="num">Days</th></tr></thead><tbody></tbody></table>
       <h2 style="margin-top:26px" class="hasinfo">HMM transition matrix
         <button class="info" data-pop="p-htrans">i</button>
         <div class="pop" id="p-htrans"><span class="kind hist">Model detail</span><br>
-          <b>Hidden-state persistence.</b> Fitted by EM, not counted from labels. Row = state today, column = tomorrow. Compare the diagonal with the Forecast matrix: the HMM typically finds stickier states because it is fit to explain the return distribution, not a ±5% threshold.</div>
+          <b>Vol-state persistence.</b> Fitted by EM, not counted from labels. Row = state today, column = tomorrow. High diagonal = volatility regimes are sticky — turbulence clusters. This matrix describes vol states only; the direction model's matrix is in the Forecast section, and they are not the same object.</div>
       </h2>
-      <table class="heat" id="hmm-trans"><thead><tr><th>from \ to</th><th class="num">Bull</th><th class="num">Sideways</th><th class="num">Bear</th></tr></thead><tbody></tbody></table>
+      <table class="heat" id="hmm-trans"><thead><tr><th>from \ to</th><th class="num">Calm</th><th class="num">Normal</th><th class="num">Turbulent</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="col hasinfo">
       <h2>Walk-forward backtest
@@ -237,12 +243,13 @@ td.muted{color:var(--warmgray)}
   <hr class="rule rule--faint">
   <h2>Glossary</h2>
   <dl class="glossary">
-    <dt>Regime</dt><dd>A persistent market state. Here: Bull / Sideways / Bear, defined two different ways on this page (rolling-return threshold, and HMM hidden state).</dd>
+    <dt>Regime</dt><dd>A persistent market state. This page reads two independent axes: direction (Bull / Sideways / Bear, from a rolling-return threshold) and volatility (Calm / Normal / Turbulent, from an HMM), combined into one named cell.</dd>
     <dt>Markov chain</dt><dd>A model where tomorrow's state depends only on today's state, via a fixed table of transition probabilities. Used for the Forecast section.</dd>
-    <dt>Hidden Markov Model (HMM)</dt><dd>A Markov chain whose states are never observed directly; only returns are. The model infers which state best explains each day's return. Used for the Current State section only — this page does not forecast with it.</dd>
-    <dt>Nowcast vs forecast</dt><dd>A nowcast classifies today. A forecast assigns probabilities to future states. Current State is a nowcast; Forecast is a forecast.</dd>
+    <dt>Hidden Markov Model (HMM)</dt><dd>A Markov chain whose states are never observed directly; only returns are. On daily returns its states separate by volatility, not drift, so here it is used strictly as a volatility classifier — it never makes a directional call and this page does not forecast with it.</dd>
+    <dt>Volatility regime</dt><dd>How large daily swings currently are, regardless of their direction: Calm / Normal / Turbulent. A violent rally and a crash can sit in the same (Turbulent) vol regime.</dd>
+    <dt>Nowcast vs forecast</dt><dd>A nowcast classifies today. A forecast assigns probabilities to future states. The Regime Read is a nowcast; Forecast is a forecast.</dd>
     <dt>Stationary / long-run mix</dt><dd>The regime shares a Markov chain settles into over a long run. Every forecast converges to it.</dd>
-    <dt>Kelly / half-Kelly</dt><dd>The bet size that maximizes long-run log growth, f* = μ/σ². Half-Kelly halves it for robustness to estimation error. Shown as a multiple of capital; a read, not an instruction.</dd>
+    <dt>Kelly / half-Kelly</dt><dd>The bet size that maximizes long-run log growth, f* = μ/σ². Here μ comes from the direction model and σ² from the volatility model. Half-Kelly halves it for robustness to estimation error. Shown as a multiple of capital; a read, not an instruction.</dd>
     <dt>Dirichlet posterior band</dt><dd>The range of forecasts consistent with the finite number of observed transitions. Narrow band = the matrix is well pinned down; it says nothing about whether the model is right.</dd>
   </dl>
 
@@ -260,10 +267,32 @@ td.muted{color:var(--warmgray)}
 </div>
 
 <script>
-const DATA = /*__DATA__*/{"asset": "BTC", "asof": "2026-08-24", "history": {"start": "2010-07-18", "end": "2026-08-23", "n_closes": 5881, "last_close": 77593.0280291116}, "params": {"window": 20, "bull_threshold": 0.05, "bear_threshold": -0.05, "lookback": null, "n_boot": 2000, "periods_per_year": 365, "risk_free": 0.04}, "states": ["Bull", "Sideways", "Bear"], "current_state": "Bull", "days_in_regime": 5, "regime_counts": {"Bull": 2472, "Sideways": 1663, "Bear": 1726}, "transition_matrix": [[0.9036827188542906, 0.08984216945790106, 0.006475111687808445], [0.12988574901403652, 0.7450390852464719, 0.12507516573949157], [0.013325608899202302, 0.11703360408395086, 0.8696407870168469]], "transition_counts": [[2233.0, 222.0, 16.0], [216.0, 1239.0, 208.0], [23.0, 202.0, 1501.0]], "trajectory": [[1.0, 0.0, 0.0], [0.9036827188542906, 0.08984216945790106, 0.006475111687808445], [0.8283979586348987, 0.1488825493706274, 0.022719491994474112], [0.7682493920573596, 0.18800733220158058, 0.04374327574106016], [0.7192560783201791, 0.21421343608465626, 0.0665304855951652], [0.6786891202344953, 0.23200321145074035, 0.08930766831476508], [0.6446436193829389, 0.24427836167805572, 0.11107801893900629], [0.6157617588682002, 0.2529129693136194, 0.13132527181818154], [0.5910530400860092, 0.25912088945850636, 0.1498260704554856], [0.5697770526823144, 0.263691362847574, 0.16653158447011282], [0.5513665610447407, 0.26714016980800814, 0.18149326914725245], [0.5353766423399954, 0.2698066471624288, 0.19481671049757712], [0.5214507095076659, 0.27191599838553665, 0.20663329210679884], [0.5092975224717612, 0.27361934860756226, 0.21708312892067796], [0.49867538872627337, 0.2750195244741187, 0.22630508679960937], [0.4893811011182757, 0.27618767364823726, 0.2344312252334886], [0.4812420256959377, 0.2771740027462878, 0.24158397155777614], [0.47411030868306653, 0.2780147359633566, 0.24787495535357862], [0.46785852971604974, 0.27873664264879816, 0.2534048276351539], [0.4623763594073036, 0.2793599988432215, 0.2582636417494768], [0.45756792858029016, 0.2799005380255951, 0.26253153339411667], [0.4533497133285666, 0.28037074772739545, 0.26627953894403994], [0.4496488030965987, 0.28078074132167774, 0.2695704555817256], [0.4464014602690563, 0.281138852604758, 0.27245968712618784], [0.44355190699542485, 0.28145204836360205, 0.2749960446409754], [0.4410512931195855, 0.28172622045838636, 0.2772224864220305], [0.4388568113137632, 0.2819663973154226, 0.27917679137081663], [0.4369309338833907, 0.28217690080665087, 0.280892165309961], [0.43524075153678876, 0.2823614655231918, 0.28239778294002205], [0.43375739855659146, 0.2825233316595925, 0.2837192697838188], [0.4324555518236384, 0.28266531897605507, 0.28487912920030933]], "horizons": [1, 5, 10, 20], "bands": {"1": {"lo": [0.8928764201710144, 0.08071987716780714, 0.004288814604379714], "mid": [0.9030199423112005, 0.09000928906791525, 0.006788089736286069], "hi": [0.912414360381024, 0.09974352362397652, 0.009889552124977831]}, "5": {"lo": [0.6490969940636314, 0.21247726818642873, 0.07852035529001769], "mid": [0.6767378439272868, 0.2324138745744715, 0.0904623337867175], "hi": [0.7040946315505728, 0.2533817649253752, 0.10419306848288291]}, "10": {"lo": [0.5147608118005956, 0.2461329608178609, 0.16163583891983013], "mid": [0.5492039836623444, 0.2670590241352648, 0.18259505271996654], "hi": [0.5845530761777277, 0.2891305984750674, 0.20540861504650382]}, "20": {"lo": [0.42042657757714447, 0.2593384802341653, 0.2333398071572611], "mid": [0.4563345180488475, 0.27957080694885617, 0.26313072711991087], "hi": [0.49522363182496115, 0.3013939690396444, 0.29458161687660345]}}, "stationary": [0.42311653320547515, 0.28368283183817006, 0.2932006349563549], "dwell": {"Bull": 10.4, "Sideways": 3.9, "Bear": 7.7}, "mixing": {"lambda2": 0.8777, "half_life_days": 5.3}, "regime_daily_return": {"Bull": 0.007499056239548856, "Sideways": 0.0003132182610045588, "Bear": 0.000764354816209741}, "expected_return": {"1": 0.0068098570222832056, "5": 0.03003537801002154, "10": 0.054218535311507, "20": 0.09647766420631321}, "max_horizon": 30, "kelly_handoff": {"current_drift_daily": 0.00428013424811227, "baseline_drift_daily": 0.0034859386391006436, "regime_edge_annual": 0.28988139728924367, "regime_tilt": 1.228, "exp_return_20d": 0.09647766420631321, "p_bull_20d": 0.45756792858029016, "p_bear_20d": 0.26253153339411667}, "hmm": {"window_days": 600, "start": "2025-01-01", "end": "2026-08-23", "current_state": "Bear", "days_in_state": 5, "posterior": {"Bear": 0.49455536062627725, "Bull": 0.08982518154390606, "Sideways": 0.41561945782970655}, "converged": true, "by_state": {"Bear": {"mu_daily": -0.0047282906531759565, "vol_daily": 0.04156529717511765, "mu_annual": -1.725826088409224, "vol_annual": 0.7941038875225224, "days": 64, "full_kelly": -2.7367957420139812, "half_kelly": 0.0}, "Bull": {"mu_daily": 0.0008582900775253716, "vol_daily": 0.00557927541223836, "mu_annual": 0.3132758782967606, "vol_annual": 0.10659190708420009, "days": 22, "full_kelly": 27.572648941476224, "half_kelly": 2.0}, "Sideways": {"mu_daily": 0.0003392255644540713, "vol_daily": 0.019504778745964565, "mu_annual": 0.12381733102573601, "vol_annual": 0.3726382747170456, "days": 513, "full_kelly": 0.8916748499023797, "half_kelly": 0.44583742495118983}}, "transition": {"Bear": {"Bear": 0.8601561056284975, "Bull": 4.0361418244251197e-22, "Sideways": 0.13984389437151631}, "Bull": {"Bear": 0.12437438416374016, "Bull": 0.3716300112354041, "Sideways": 0.5039956046008572}, "Sideways": {"Bear": 3.0232714609539788e-12, "Bull": 0.16189502493603294, "Sideways": 0.8381049750609383}}, "kelly_mixture": {"mu_daily": -0.002120316681915864, "vol_daily": 0.03196901897498933, "half_kelly": 0.0}, "backtest": {"strategy": {"sharpe": -0.42395856661321374, "max_drawdown": -0.243187954412861, "total_return": -0.07962554125573507}, "buy_hold": {"sharpe": -0.7257634603351542, "max_drawdown": -0.5311409452054983, "total_return": -0.3191906509021042}, "n_days": 327, "days_invested": 71, "lookback": 252}}}/*__END_DATA__*/;
+const DATA = /*__DATA__*/{"asset": "BTC", "asof": "2026-08-25", "history": {"start": "2010-07-18", "end": "2026-08-24", "n_closes": 5882, "last_close": 78894.4979810754}, "params": {"window": 20, "bull_threshold": 0.05, "bear_threshold": -0.05, "lookback": null, "n_boot": 2000, "periods_per_year": 365, "risk_free": 0.04}, "states": ["Bull", "Sideways", "Bear"], "current_state": "Bull", "days_in_regime": 6, "regime_counts": {"Bull": 2473, "Sideways": 1663, "Bear": 1726}, "transition_matrix": [[0.9037216821556776, 0.08980582553826155, 0.006472492306060893], [0.12988574901403652, 0.7450390852464719, 0.12507516573949157], [0.013325608899202302, 0.11703360408395086, 0.8696407870168469]], "transition_counts": [[2234.0, 222.0, 16.0], [216.0, 1239.0, 208.0], [23.0, 202.0, 1501.0]], "trajectory": [[1.0, 0.0, 0.0], [0.9037216821556776, 0.08980582553826155, 0.006472492306060893], [0.8284636256152222, 0.14882582093363161, 0.02271055345114624], [0.7683335265235481, 0.18793981123737327, 0.04372666223907869], [0.7193530545980533, 0.21414082056025918, 0.06650612484168775], [0.6787950280471693, 0.2319288274696726, 0.08927614448315845], [0.6447556930449551, 0.24420409827291867, 0.11104020868212658], [0.6158780101074958, 0.2528398510953943, 0.1312821387971103], [0.5911720191742214, 0.2590494263578075, 0.1497785544679716], [0.5698976908239641, 0.2636217629081772, 0.1664805462678591], [0.5514880645886895, 0.26707246802455814, 0.18143946738675276], [0.5354984203505418, 0.2697407829777639, 0.19476079667169457], [0.5215723230729434, 0.27185186188618565, 0.20657581504087125], [0.5094186483945413, 0.27355680770452134, 0.21702454390093784], [0.49879579290872866, 0.27495844058618113, 0.22624576650509065], [0.48950061862246597, 0.2761279104751317, 0.23437147090240285], [0.48136054551185925, 0.2771154309224571, 0.24152402356568417], [0.47422776189986093, 0.27795723528413885, 0.2478150028160008], [0.46797488021469635, 0.2786801028899433, 0.25334501689536093], [0.4624915964651055, 0.27930431978633946, 0.2582040837485557], [0.45768206095482483, 0.2798456290543475, 0.2624723099908284], [0.45346276450640777, 0.28031652720944217, 0.2662207082841508], [0.4497608074717699, 0.28072713590122705, 0.2695120566270038], [0.44651246007141093, 0.2810857964766057, 0.2724017434519841], [0.4436619498284783, 0.2813994825674768, 0.27493856760404567], [0.4411604299960977, 0.28167409221354517, 0.277165477790358], [0.43896509509899545, 0.2819146594044799, 0.2791202454965256], [0.437038418072615, 0.2821255110113867, 0.2808360709159992], [0.43534748930673695, 0.2823103861116395, 0.28234212458162455], [0.43386344204103194, 0.28247252892190255, 0.28366402903706656], [0.432560951571804, 0.2826147628057808, 0.28482428562241624]], "horizons": [1, 5, 10, 20], "bands": {"1": {"lo": [0.8929189699303516, 0.08068754097381628, 0.004287069123280524], "mid": [0.903058827181939, 0.08997248983041403, 0.006785374658012029], "hi": [0.9124500632928543, 0.09970351325145621, 0.009885592060718807]}, "5": {"lo": [0.6492090661916201, 0.21240607757705898, 0.07849237046020995], "mid": [0.6768434990942109, 0.2323398115257997, 0.09043107016613333], "hi": [0.7041946461833722, 0.25330254821955245, 0.1041568043751134]}, "10": {"lo": [0.514885238223782, 0.24607169971076787, 0.16158730792354317], "mid": [0.5493250142902701, 0.26699270488477705, 0.18253975362712013], "hi": [0.5846716012200635, 0.28906035648764783, 0.20535030212936817]}, "20": {"lo": [0.42053949739007046, 0.2592841058145662, 0.23328526822133355], "mid": [0.45644955806217513, 0.27951463677659677, 0.26307113285603934], "hi": [0.4953397687206094, 0.3013388263957196, 0.29451998285192715]}}, "stationary": [0.42321529773131134, 0.2836342643163275, 0.2931504379523612], "dwell": {"Bull": 10.4, "Sideways": 3.9, "Bear": 7.7}, "mixing": {"lambda2": 0.8777, "half_life_days": 5.3}, "regime_daily_return": {"Bull": 0.007502807845832171, "Sideways": 0.0003132182610045588, "Bear": 0.000764354816209741}, "expected_return": {"1": 0.006813526232496425, "5": 0.030053197342417848, "10": 0.05425281201337895, "20": 0.09654240582090168}, "max_horizon": 30, "kelly_handoff": {"current_drift_daily": 0.004282915775276171, "baseline_drift_daily": 0.0034882134364480305, "regime_edge_annual": 0.2900663536722714, "regime_tilt": 1.228, "exp_return_20d": 0.09654240582090168, "p_bull_20d": 0.45768206095482483, "p_bear_20d": 0.2624723099908284}, "hmm": {"window_days": 600, "start": "2025-01-02", "end": "2026-08-24", "current_state": "Turbulent", "declared_state": "Normal", "lean_state": "Normal", "declare_threshold": 0.6, "days_in_state": 6, "posterior": {"Turbulent": 0.32691845291658633, "Calm": 0.04485640098043514, "Normal": 0.6282251461029099}, "converged": true, "by_state": {"Turbulent": {"mu_daily": -0.0046335661065343755, "vol_daily": 0.04210972681602329, "mu_annual": -1.691251628885047, "vol_annual": 0.8045052012074505, "days": 57}, "Calm": {"mu_daily": 0.001420504329264389, "vol_daily": 0.006525380883371164, "mu_annual": 0.5184840801815019, "vol_annual": 0.1246672267304805, "days": 20}, "Normal": {"mu_daily": 5.475878477746855e-05, "vol_daily": 0.01984089374216304, "mu_annual": 0.01998695644377602, "vol_annual": 0.379059742702979, "days": 522}}, "transition": {"Turbulent": {"Turbulent": 0.8539125067790911, "Calm": 1.0244496535149025e-18, "Normal": 0.14608749322091075}, "Calm": {"Turbulent": 0.10706166706565166, "Calm": 0.4482158687135314, "Normal": 0.44472246422081774}, "Normal": {"Turbulent": 2.2719861866436533e-10, "Calm": 0.16477435625127673, "Normal": 0.8352256435215285}}, "backtest": {"strategy": {"sharpe": -0.3185196720047089, "max_drawdown": -0.243187954412861, "total_return": -0.0641880756349682}, "buy_hold": {"sharpe": -0.7830405147587493, "max_drawdown": -0.5311409452054987, "total_return": -0.3336234591405569}, "n_days": 327, "days_invested": 72, "lookback": 252}}, "combined": {"direction": "Bull", "vol_state": "Normal", "vol_lean": "Normal", "mu_daily": 0.004282915775276171, "sigma_daily": 0.028790955239792443, "half_kelly": 2.0, "half_kelly_uncapped": 2.5834341111053503, "cap": 2.0}}/*__END_DATA__*/;
 const STATES = ["Bull","Sideways","Bear"];
 const FILL = {Bull:"#C9A24B", Sideways:"#3A3A40", Bear:"#B0413E"};
 const CLS  = {Bull:"gold", Sideways:"gray", Bear:"ox"};
+const VOL  = ["Calm","Normal","Turbulent"];
+const VFILL = {Calm:"#3F8F6B", Normal:"#3A3A40", Turbulent:"#B0413E"};
+const VCLS  = {Calm:"jade", Normal:"gray", Turbulent:"ox"};
+const CELL = {
+  Bull:     {Calm:"Grinding Uptrend", Normal:"Uptrend",   Turbulent:"Volatile Rally", Shifting:"Uptrend, Vol Shifting"},
+  Sideways: {Calm:"Coiling",          Normal:"Rangebound",Turbulent:"Choppy Range",   Shifting:"Range, Vol Shifting"},
+  Bear:     {Calm:"Slow Bleed",       Normal:"Downtrend", Turbulent:"Risk-Off",       Shifting:"Downtrend, Vol Shifting"},
+};
+const PLAY = {
+  "Bull|Calm":"Trend up with contained daily swings — the regime most permissive of full size.",
+  "Bull|Normal":"Established uptrend at typical volatility — stay with the trend at standard size.",
+  "Bull|Turbulent":"Price is trending up but daily swings are in the top vol regime — participate, sized down; fat tails cut both ways.",
+  "Bull|Shifting":"Trend is up but the volatility regime is between states — no vol state clears the declaration bar. Size off the probability mix, not a single state.",
+  "Sideways|Calm":"Flat price, compressed swings — a coiling market. Low information; regimes like this precede breaks in either direction.",
+  "Sideways|Normal":"Rangebound at typical volatility — no directional edge from trend; carry and levels matter more than regime.",
+  "Sideways|Turbulent":"No net trend but violent daily swings — whipsaw conditions; the regime most punishing to leverage in either direction.",
+  "Sideways|Shifting":"No net trend and the volatility regime is between states — the least-defined cell on the grid; smallest footprint.",
+  "Bear|Calm":"Price drifting lower on quiet tape — an orderly decline rather than a panic.",
+  "Bear|Normal":"Established downtrend at typical volatility — trend argues against long exposure.",
+  "Bear|Turbulent":"Downtrend plus top-regime volatility — the classic risk-off cell; capital preservation over positioning.",
+  "Bear|Shifting":"Trend is down and the volatility regime is between states — treat as risk-off until the vol read settles.",
+};
 function pct(x,d=1){ return (x*100).toFixed(d) + "%"; }
 
 /* ---- info popups ---- */
@@ -314,7 +343,7 @@ function drawChart(d){
   s += `<text x="${mL-30}" y="${mT+ph/2}" fill="#9A958A" font-size="10.5" text-anchor="middle" transform="rotate(-90 ${mL-30} ${mT+ph/2})">probability</text>`;
   svg.innerHTML = s;
 }
-const heat = (tbl, rows) => document.querySelector(tbl+" tbody").innerHTML = STATES.map((s,i)=>
+const heat = (tbl, rows, labels=STATES) => document.querySelector(tbl+" tbody").innerHTML = labels.map((s,i)=>
   `<tr><td class="muted">${s}</td>` + rows[i].map(v=>`<td class="num" style="background:rgba(201,162,75,${(0.07+0.55*v).toFixed(3)})">${pct(v)}</td>`).join("") + "</tr>").join("");
 
 (function render(d){
@@ -322,35 +351,47 @@ const heat = (tbl, rows) => document.querySelector(tbl+" tbody").innerHTML = STA
   const traj = d.trajectory, H = traj.length - 1, cur = d.current_state, si = STATES.indexOf(cur);
   const far = Math.min(20, H), dist = traj[far];
   let topI = 0; dist.forEach((p,i)=>{ if(p>dist[topI]) topI = i; });
-  const k = d.kelly_handoff, h = d.hmm;
+  const k = d.kelly_handoff, h = d.hmm, c = d.combined;
 
   // fill popup placeholders
   const fill = (cls, v) => document.querySelectorAll("."+cls).forEach(e=>e.textContent=v);
   fill("win", d.params.window); fill("bt", "+"+(d.params.bull_threshold*100).toFixed(0)+"%");
   fill("brt", (d.params.bear_threshold*100).toFixed(0)+"%"); fill("hdays", h.window_days);
   fill("nclose", d.history.n_closes.toLocaleString("en-US")); fill("lb", h.backtest.lookback);
+  fill("thresh", pct(h.declare_threshold,0));
+
+  const volKey = c.vol_state || "Shifting";
+  const cellName = CELL[cur][volKey];
+  const volTxt = c.vol_state ? `${c.vol_state} vol` : `vol shifting (lean ${c.vol_lean})`;
 
   document.getElementById("headline").textContent =
-    `${d.asset} today: ${cur} (label) · ${h.current_state} (HMM) — ${pct(dist[topI])} ${STATES[topI]} in ${far} sessions`;
+    `${d.asset} today: ${cellName} — ${pct(dist[topI])} ${STATES[topI]} in ${far} sessions`;
   document.getElementById("asof").textContent =
     `As of ${d.asof} · ${d.history.n_closes.toLocaleString("en-US")} daily closes (${d.history.start} → ${d.history.end}) · last close $${Math.round(d.history.last_close).toLocaleString("en-US")} · rebuilt daily 05:00 PT`;
 
-  // ---- current state ----
+  // ---- regime read ----
+  const cn = document.getElementById("cell-name"); cn.textContent = cellName; cn.classList.add(CLS[cur]);
+  document.getElementById("cell-sub").textContent =
+    `${cur} trend, ${d.days_in_regime} sessions · ${volTxt}, ${h.days_in_state} sessions decoded`;
+  document.getElementById("cell-play").textContent = PLAY[cur+"|"+volKey] || "";
+
   const cr = document.getElementById("cur-regime"); cr.textContent = cur; cr.classList.add(CLS[cur]);
   document.getElementById("cur-sub").textContent = `${d.days_in_regime} sessions running · ${d.params.window}d return vs ±${(d.params.bull_threshold*100).toFixed(0)}%`;
 
-  const hr = document.getElementById("hmm-regime"); hr.textContent = h.current_state; hr.classList.add(CLS[h.current_state]);
-  document.getElementById("hmm-sub").textContent = `${h.days_in_state} sessions decoded · P(${h.current_state}) ${pct(h.posterior[h.current_state],0)}${h.converged?"":" · EM not converged"}`;
-  document.getElementById("hmm-bar").innerHTML = STATES.map(s=>`<span style="width:${(h.posterior[s]*100).toFixed(1)}%;background:${FILL[s]}"></span>`).join("");
-  document.getElementById("hmm-key").textContent = STATES.map(s=>`${s} ${pct(h.posterior[s],0)}`).join(" · ");
+  const hr = document.getElementById("hmm-regime");
+  hr.textContent = c.vol_state || "Shifting"; hr.classList.add(c.vol_state ? VCLS[c.vol_state] : "gray");
+  document.getElementById("hmm-sub").textContent = c.vol_state
+    ? `P(${c.vol_state}) ${pct(h.posterior[c.vol_state],0)} · declared at ≥${pct(h.declare_threshold,0)}${h.converged?"":" · EM not converged"}`
+    : `no state ≥${pct(h.declare_threshold,0)} — leaning ${c.vol_lean} at ${pct(h.posterior[c.vol_lean],0)}${h.converged?"":" · EM not converged"}`;
+  document.getElementById("hmm-bar").innerHTML = VOL.map(s=>`<span style="width:${(h.posterior[s]*100).toFixed(1)}%;background:${VFILL[s]}"></span>`).join("");
+  document.getElementById("hmm-key").textContent = VOL.map(s=>`${s} ${pct(h.posterior[s],0)}`).join(" · ");
 
-  const km = h.kelly_mixture, kv = document.getElementById("kelly-val");
-  kv.textContent = km.half_kelly.toFixed(2) + "×"; kv.classList.add(km.half_kelly>=1?"jade":km.half_kelly>0?"gold":"ox");
-  document.getElementById("kelly-sub").textContent = `μ ${pct(km.mu_daily*365,0)} · σ ${pct(km.vol_daily*Math.sqrt(365),0)} ann. (posterior mix)`;
-
-  const at = document.getElementById("agree-tag");
-  if(cur===h.current_state){ at.textContent = `Models agree — both ${cur}`; at.classList.add("ok"); }
-  else { at.textContent = `Models disagree — label ${cur}, HMM ${h.current_state}`; at.classList.add("warn"); }
+  const kv = document.getElementById("kelly-val");
+  kv.textContent = c.half_kelly.toFixed(2) + "×"; kv.classList.add(c.half_kelly>=1?"jade":c.half_kelly>0?"gold":"ox");
+  document.getElementById("kelly-sub").textContent =
+    `μ ${(c.mu_daily>=0?"+":"")+pct(c.mu_daily*365,0)} (trend model) · σ ${pct(c.sigma_daily*Math.sqrt(365),0)} (vol mix), ann.`;
+  if(c.half_kelly_uncapped > c.cap){ const kt = document.getElementById("kelly-tag");
+    kt.textContent = `capped at ${c.cap.toFixed(0)}× — uncapped ${c.half_kelly_uncapped.toFixed(1)}×`; kt.style.display = "inline-block"; }
 
   // ---- forecast ----
   document.getElementById("fwd-regime").textContent = STATES[topI];
@@ -373,9 +414,9 @@ const heat = (tbl, rows) => document.querySelector(tbl+" tbody").innerHTML = STA
   heat("#trans-table", d.transition_matrix);
 
   // ---- model detail ----
-  document.querySelector("#hmm-table tbody").innerHTML = STATES.map(s=>{ const x = h.by_state[s];
-    return `<tr><td class="muted">${s}</td><td class="num ${x.mu_annual>=0?"jade":"oxblood"}">${(x.mu_annual>=0?"+":"")+pct(x.mu_annual,0)}</td><td class="num">${pct(x.vol_annual,0)}</td><td class="num">${x.days}</td><td class="num">${x.half_kelly.toFixed(2)}×</td></tr>`; }).join("");
-  heat("#hmm-trans", STATES.map(a=>STATES.map(b=>h.transition[a][b])));
+  document.querySelector("#hmm-table tbody").innerHTML = VOL.map(s=>{ const x = h.by_state[s];
+    return `<tr><td class="muted">${s}</td><td class="num ${x.mu_annual>=0?"jade":"oxblood"}">${(x.mu_annual>=0?"+":"")+pct(x.mu_annual,0)}</td><td class="num">${pct(x.vol_annual,0)}</td><td class="num">${x.days}</td></tr>`; }).join("");
+  heat("#hmm-trans", VOL.map(a=>VOL.map(b=>h.transition[a][b])), VOL);
 
   const bt = h.backtest, S = bt.strategy, B = bt.buy_hold, sg = x=>(x>=0?"+":"")+pct(x,1);
   document.querySelector("#bt-table tbody").innerHTML = [
@@ -394,11 +435,13 @@ const heat = (tbl, rows) => document.querySelector(tbl+" tbody").innerHTML = STA
   ].map(r=>`<tr><td class="muted">${r[0]}</td><td class="num">${r[1]}</td></tr>`).join("");
 
   document.getElementById("disclosure").textContent =
-    "TON618 Capital internal research. Not investment advice. Current State: the rolling-return label is a mechanical " +
-    `${d.params.window}-day threshold; the HMM is a 3-state Gaussian mixture fit on the trailing ${h.window_days} days and re-fit every run, ` +
-    "so its states and today's decode can change as new data arrives. Forecast: a first-order Markov chain on the rolling-return labels, " +
+    "TON618 Capital internal research. Not investment advice. Regime Read: direction is a mechanical " +
+    `${d.params.window}-day rolling-return threshold; volatility is a 3-state Gaussian HMM fit on the trailing ${h.window_days} days, ` +
+    "labeled Calm/Normal/Turbulent by fitted vol and re-fit every run, so its states and today's decode can change as new data arrives. " +
+    "The HMM makes no directional call. Forecast: a first-order Markov chain on the rolling-return labels, " +
     "assumed stationary over the full history; bands reflect sampling error in the transition counts only, not model misspecification. " +
-    "Kelly figures are sizing reads, not execution rules. Backtest is gross of costs and not out-of-sample validation.";
+    "Kelly figures combine the trend model's drift with the vol model's variance — sizing reads, not execution rules. " +
+    "Backtest is gross of costs and not out-of-sample validation.";
 })(DATA);
 </script>
 </body>
